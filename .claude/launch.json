@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "franklin-covey-ilp-dev",
+      "runtimeExecutable": "C:\\Users\\sellis\\OneDrive - Industria La Popular S.A\\Documentos\\ILP\\Claude\\.claude\\dev-server.bat",
+      "runtimeArgs": [],
+      "port": 3000
+    }
+  ]
+}

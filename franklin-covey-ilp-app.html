@@ -1,0 +1,1688 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Franklin Covey ILP</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap');
+  :root{
+    --primary:#1B3A4B; --primary2:#274F63; --accent:#D9A441;
+    --success:#2E7D5B; --risk:#C97A2B; --critical:#B94A48;
+    --bg:#F7F5F1; --card:#FFFFFF; --text:#3A3A3A; --muted:#7A8489; --border:#E7E2D9;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:14px;}
+  .shell{display:grid;grid-template-columns:220px 1fr;min-height:100vh;}
+  nav{background:var(--primary);color:#EFE9DD;padding:22px 16px;position:sticky;top:0;height:100vh;overflow-y:auto;}
+  nav .brand{font-family:'Fraunces',serif;font-size:17px;font-weight:600;margin-bottom:2px;}
+  nav .brand-sub{font-size:10.5px;color:#9FB4BE;margin-bottom:18px;}
+  nav .group-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:#9FB4BE;margin:16px 0 6px;}
+  nav .item{padding:8px 10px;border-radius:6px;font-size:13.5px;margin-bottom:2px;cursor:pointer;display:flex;align-items:center;gap:8px;}
+  nav .item:hover{background:rgba(255,255,255,.08);}
+  nav .item.active{background:rgba(255,255,255,.16);font-weight:600;}
+  main{padding:24px 30px;max-width:1180px;}
+  header.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;gap:12px;flex-wrap:wrap;}
+  header.top select{font-family:'Inter';font-size:13px;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);}
+  h1.pagetitle{font-family:'Fraunces';font-size:21px;font-weight:600;margin:0;}
+  .user-box{display:flex;align-items:center;gap:10px;}
+  .user-meta{text-align:right;font-size:12px;line-height:1.3;}
+  .user-meta .name{font-weight:600;}
+  .user-meta .role{color:var(--muted);}
+  .avatar{width:30px;height:30px;border-radius:50%;background:var(--accent);display:inline-flex;align-items:center;justify-content:center;font-family:'Fraunces';font-weight:600;color:#3A2A0A;font-size:13px;flex-shrink:0;}
+  .switch-user{background:none;border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:11.5px;cursor:pointer;color:var(--primary);white-space:nowrap;}
+
+  button.btn{font-family:'Inter';font-weight:600;font-size:13px;border:none;border-radius:6px;padding:8px 14px;cursor:pointer;}
+  button.btn.primary{background:var(--primary);color:#fff;}
+  button.btn.primary:hover{background:var(--primary2);}
+  button.btn.accent{background:var(--accent);color:#3A2A0A;}
+  button.btn.ghost{background:transparent;color:var(--primary);border:1px solid var(--border);}
+  button.btn:disabled{opacity:.45;cursor:not-allowed;}
+  button.icon-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:14px;padding:2px 6px;}
+  button.icon-btn:hover{color:var(--critical);}
+  button.icon-btn.edit:hover{color:var(--primary);}
+
+  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+  .kpi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:15px 17px;}
+  .kpi .lbl{font-size:11.5px;color:var(--muted);margin-bottom:5px;}
+  .kpi .val{font-family:'IBM Plex Mono';font-size:23px;font-weight:500;color:var(--primary);}
+
+  .panel{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:17px 19px;margin-bottom:16px;}
+  .panel h3{font-family:'Fraunces';font-size:15px;font-weight:600;margin:0 0 12px;display:flex;justify-content:space-between;align-items:center;}
+  .content-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);padding:6px 8px;border-bottom:2px solid var(--border);}
+  td{padding:8px;border-bottom:1px solid var(--border);vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+  .empty-row{color:var(--muted);font-style:italic;padding:16px 4px;}
+
+  .pill{display:inline-block;font-size:11px;padding:3px 9px;border-radius:999px;font-weight:600;}
+  .pill.on_track,.pill.done,.pill.active,.pill.completed,.pill.submitted,.pill.lvl-colaborador{background:#E4F1EA;color:var(--success);}
+  .pill.at_risk,.pill.pending,.pill.open,.pill.draft,.pill.on_leave{background:#FBEEE0;color:var(--risk);}
+  .pill.off_track,.pill.missed,.pill.suspended,.pill.terminated{background:#F8E4E3;color:var(--critical);}
+  .pill.achieved,.pill.lvl-admin{background:#DDE9F1;color:var(--primary);}
+  .pill.lvl-gerente{background:#FBEEE0;color:var(--risk);}
+  .quad{display:inline-block;font-size:11px;padding:3px 8px;border-radius:5px;font-weight:600;}
+  .quad.q1{background:#F8E4E3;color:var(--critical);}
+  .quad.q2{background:#E4F1EA;color:var(--success);}
+  .quad.q3{background:#FBEEE0;color:var(--risk);}
+  .quad.q4{background:#EEE8DC;color:var(--muted);}
+
+  .progress-track{height:8px;background:#EEE8DC;border-radius:5px;overflow:hidden;width:100%;}
+  .progress-fill{height:100%;background:var(--success);border-radius:5px;}
+  .progress-fill.risk{background:var(--risk);}
+  .progress-fill.off{background:var(--critical);}
+
+  .quadrant-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .quadrant-box{border-radius:8px;padding:12px 14px;min-height:120px;}
+  .quadrant-box h4{margin:0 0 8px;font-size:12.5px;font-family:'Fraunces';}
+  .quadrant-box.q1{background:#FBECEA;} .quadrant-box.q2{background:#EAF4EE;}
+  .quadrant-box.q3{background:#FCF2E4;} .quadrant-box.q4{background:#F1EEE6;}
+  .task-chip{background:#fff;border-radius:6px;padding:6px 9px;font-size:12.5px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:6px;}
+  .task-chip.done{opacity:.55;text-decoration:line-through;}
+
+  .modal-overlay{position:fixed;inset:0;background:rgba(27,58,75,.35);display:none;align-items:center;justify-content:center;z-index:50;}
+  .modal-overlay.show{display:flex;}
+  .modal{background:#fff;border-radius:10px;padding:22px 24px;width:460px;max-height:86vh;overflow-y:auto;}
+  .modal h3{font-family:'Fraunces';margin:0 0 16px;font-size:16px;}
+  .field{margin-bottom:12px;}
+  .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;}
+  .field input,.field select,.field textarea{width:100%;padding:7px 9px;border:1px solid var(--border);border-radius:6px;font-family:'Inter';font-size:13px;}
+  .field textarea{resize:vertical;min-height:56px;}
+  .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;}
+
+  .badge-tag{background:#F1E6CE;color:#7A5A16;font-size:11px;padding:3px 9px;border-radius:999px;font-weight:600;}
+  .wall-item{border-bottom:1px solid var(--border);padding:10px 0;font-size:13px;}
+  .wall-item:last-child{border-bottom:none;}
+  .wall-item .meta{color:var(--muted);font-size:11.5px;margin-top:2px;}
+
+  .save-toast{position:fixed;bottom:18px;right:18px;background:var(--primary);color:#fff;padding:9px 16px;border-radius:8px;font-size:12.5px;opacity:0;transform:translateY(8px);transition:.25s;pointer-events:none;z-index:60;}
+  .save-toast.show{opacity:1;transform:translateY(0);}
+  .filter-bar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
+  .filter-bar select,.filter-bar input{padding:6px 9px;border:1px solid var(--border);border-radius:6px;font-size:12.5px;}
+  .subnote{color:var(--muted);font-size:12px;margin-top:-6px;margin-bottom:14px;}
+  .link-btn{background:none;border:none;color:var(--primary);font-weight:600;cursor:pointer;font-size:12.5px;padding:0;text-decoration:underline;}
+  .week-nav{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+  .week-nav button{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:5px 10px;cursor:pointer;}
+  .week-label{font-family:'IBM Plex Mono';font-weight:500;}
+
+  /* login gate */
+  .login-shell{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--primary);}
+  .login-card{background:#fff;border-radius:12px;padding:34px 36px;width:400px;}
+  .login-card .brand{font-family:'Fraunces';font-size:22px;font-weight:600;color:var(--primary);margin-bottom:4px;}
+  .login-card .brand-sub{font-size:12.5px;color:var(--muted);margin-bottom:20px;}
+  .login-tabs{display:flex;gap:8px;margin-bottom:20px;}
+  .tab-btn{flex:1;padding:8px 0;border:1px solid var(--border);background:#fff;border-radius:7px;cursor:pointer;font-size:12.5px;font-weight:600;color:var(--muted);}
+  .tab-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+  .login-card label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:6px;}
+  .login-card input{width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:7px;font-size:14px;margin-bottom:16px;}
+  .login-error{color:var(--critical);font-size:12.5px;margin-bottom:12px;min-height:16px;}
+  .login-hint{font-size:11px;color:var(--muted);margin-top:14px;text-align:center;}
+
+  /* wizard */
+  .step-progress{display:flex;gap:6px;margin-bottom:20px;}
+  .step-dot{flex:1;height:6px;border-radius:4px;background:#EEE8DC;}
+  .step-dot.done{background:var(--success);}
+  .step-dot.current{background:var(--primary);}
+  .step-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px;}
+  .activity-slot{border:1px dashed var(--border);border-radius:8px;padding:14px 16px;margin-bottom:10px;}
+  .activity-slot.filled{border-style:solid;background:#FBFAF7;}
+  .activity-slot .slot-title{font-size:12px;color:var(--muted);margin-bottom:6px;}
+  .activity-slot .slot-desc{font-weight:600;margin-bottom:4px;}
+  .activity-slot .slot-comment{font-size:12.5px;color:var(--text);}
+  .wizard-actions{display:flex;justify-content:space-between;margin-top:20px;}
+  .roadblock-empty{text-align:center;padding:26px 10px;color:var(--muted);}
+  .report-block{margin-bottom:18px;}
+  .report-block h4{font-family:'Fraunces';font-size:14px;margin:0 0 8px;display:flex;justify-content:space-between;align-items:center;}
+  .confirm-box{text-align:center;padding:40px 20px;}
+  .confirm-box .check{font-size:42px;color:var(--success);margin-bottom:10px;}
+
+  /* org chart — diagrama con cajas y líneas conectoras */
+  .orgchart{text-align:center;padding:24px 16px 10px;min-width:max-content;}
+  .orgchart ul{padding-top:24px;position:relative;display:flex;justify-content:center;}
+  .orgchart li{display:flex;flex-direction:column;align-items:center;list-style-type:none;position:relative;padding:24px 14px 0 14px;}
+  .orgchart li::before,.orgchart li::after{content:'';position:absolute;top:0;width:50%;height:24px;border-top:2px solid var(--border);}
+  .orgchart li::before{right:50%;}
+  .orgchart li::after{left:50%;border-left:2px solid var(--border);}
+  .orgchart li:only-child{padding-top:0;}
+  .orgchart li:only-child::before,.orgchart li:only-child::after{display:none;}
+  .orgchart li:first-child::before{border:none;}
+  .orgchart li:last-child::after{border:none;}
+  .orgchart li:last-child::before{border-right:2px solid var(--border);border-radius:0 6px 0 0;}
+  .orgchart li:first-child::after{border-radius:6px 0 0 0;}
+  .orgchart > ul > li{padding-top:0;}
+  .orgchart > ul > li::before,.orgchart > ul > li::after{display:none;}
+  .orgchart ul ul::before{content:'';position:absolute;top:0;left:50%;width:0;height:24px;border-left:2px solid var(--border);}
+  .org-box{display:inline-block;text-align:left;background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 12px;min-width:168px;max-width:200px;box-shadow:0 1px 2px rgba(27,58,75,.05);}
+  .org-box.regional{border-color:var(--accent);background:#FFFBF0;}
+  .org-box-title{font-weight:600;font-size:13px;margin-bottom:2px;}
+  .org-box-type{font-size:10.5px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em;}
+  .org-box-occupants{font-size:11.5px;color:var(--text);margin-bottom:6px;}
+  .org-regional-check{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);margin-bottom:6px;cursor:pointer;}
+  .org-regional-check input{width:auto;margin:0;}
+  .org-box .link-btn{display:block;font-size:11px;margin-bottom:6px;}
+  .org-box-actions{display:flex;gap:8px;justify-content:flex-end;border-top:1px solid var(--border);padding-top:6px;}
+  .org-box-actions button{background:none;border:none;cursor:pointer;color:var(--muted);font-size:11.5px;padding:0;}
+  .org-box-actions button:hover{color:var(--primary);}
+  .org-box.ghost{border-style:dashed;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;min-height:64px;text-align:center;font-size:12.5px;background:transparent;}
+  .org-box.ghost:hover{border-color:var(--primary);color:var(--primary);background:#FBFAF7;}
+</style>
+</head>
+<body>
+
+<div id="loginGate"></div>
+
+<div class="shell" id="appShell" style="display:none;">
+  <nav id="navbar"></nav>
+  <main>
+    <header class="top">
+      <h1 class="pagetitle" id="pageTitle">Dashboard</h1>
+      <div class="user-box">
+        <div class="user-meta"><div class="name" id="userName"></div><div class="role" id="userRole"></div></div>
+        <div class="avatar" id="userAvatar"></div>
+        <span id="modeToggleHolder"></span>
+        <button class="switch-user" id="switchUserBtn">Cambiar usuario</button>
+      </div>
+    </header>
+    <div id="view"></div>
+  </main>
+</div>
+
+<div class="modal-overlay" id="modalOverlay"><div class="modal" id="modalBody"></div></div>
+<div class="save-toast" id="saveToast">Guardado</div>
+
+<script>
+/* ============================= STORAGE ============================= */
+const STORAGE_KEY = 'fcilp-data-v3';
+const SESSION_KEY = 'fcilp-session-v3';
+let state = null;
+let session = null;       // {employeeId}
+let activeMode = 'normal'; // 'admin' | 'normal' — solo relevante para cuentas con rol de nivel admin
+
+function uid(){ return 'id-' + Math.random().toString(36).slice(2,10) + Date.now().toString(36); }
+
+async function hashPassword(pw){
+  const enc = new TextEncoder().encode(pw);
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+function seedData(){
+  // ---- Roles (catálogo editable) ----
+  const roleAdmin = {id:'role-admin', name:'Administrador', accessLevel:'admin', description:'Control total: usuarios, roles y organigrama de la plataforma.', locked:true};
+  const roleGerente = {id:'role-gerente', name:'Gerente', accessLevel:'gerente', description:'Gestiona a su equipo: MCIs, rendición de cuentas, desempeño y desarrollo.', locked:true};
+  const roleColaborador = {id:'role-colaborador', name:'Colaborador', accessLevel:'colaborador', description:'Reporta su propia rendición de cuentas semanal y gestiona sus MCIs individuales.', locked:true};
+  const roles = [roleAdmin, roleGerente, roleColaborador];
+
+  // ---- Organigrama (editable con el tiempo) ----
+  const orgRoot = {id:uid(), name:'Gerencia General', type:'Gerencia General', parentId:null, isRegional:false};
+  const orgMC = {id:uid(), name:'Mejora Continua', type:'Departamento', parentId:orgRoot.id, isRegional:true};
+  const orgGt = {id:uid(), name:'Guatemala', type:'País', parentId:orgMC.id, isRegional:false};
+  const orgGtMs = {id:uid(), name:'Management Systems', type:'Área funcional', parentId:orgGt.id, isRegional:false};
+  const orgGtCs = {id:uid(), name:'Customer Service', type:'Área funcional', parentId:orgGt.id, isRegional:false};
+  const orgGtSp = {id:uid(), name:'Savings Projects', type:'Área funcional', parentId:orgGt.id, isRegional:false};
+  const orgCr = {id:uid(), name:'Costa Rica', type:'País', parentId:orgMC.id, isRegional:false};
+  const orgCrCoord = {id:uid(), name:'Coordinación Regional', type:'Coordinación regional', parentId:orgCr.id, isRegional:false};
+  const orgPa = {id:uid(), name:'Panamá', type:'País', parentId:orgMC.id, isRegional:false};
+  const orgPaCoord = {id:uid(), name:'Coordinación Regional', type:'Coordinación regional', parentId:orgPa.id, isRegional:false};
+  const orgSv = {id:uid(), name:'El Salvador', type:'País', parentId:orgMC.id, isRegional:false};
+  const orgHn = {id:uid(), name:'Honduras', type:'País', parentId:orgMC.id, isRegional:false};
+  const orgNi = {id:uid(), name:'Nicaragua', type:'País', parentId:orgMC.id, isRegional:false};
+  const orgUnits = [orgRoot, orgMC, orgGt, orgGtMs, orgGtCs, orgGtSp, orgCr, orgCrCoord, orgPa, orgPaCoord, orgSv, orgHn, orgNi];
+
+  // ---- Personas ----
+  const emp = (name,pos,orgUnitId,email,manager,pwPlain,roleId) => ({id:uid(),name,pos,orgUnitId,manager,email,_pwPlain:pwPlain,roleId,hireDate:'2022-01-10',status:'active'});
+  const steven = emp('Steven Ellis','Gerente Regional de Mejora Continua', orgMC.id, 'sellis@ilpsa.com', null, 'julio,2026', roleAdmin.id);
+  const luis   = emp('Luis Fernández','Analista Sr. Sistemas de Gestión', orgGtMs.id, 'luis.fernandez@ilpsa.com', steven.id, 'Bienvenido2026', roleColaborador.id);
+  const maria  = emp('María Torres','Supervisora Servicio al Cliente', orgGtCs.id, 'maria.torres@ilpsa.com', steven.id, 'Bienvenido2026', roleColaborador.id);
+  const carlos = emp('Carlos Pineda','Analista Proyectos de Ahorro', orgGtSp.id, 'carlos.pineda@ilpsa.com', steven.id, 'Bienvenido2026', roleColaborador.id);
+  const ana    = emp('Ana Ramírez','Coordinadora Regional', orgCrCoord.id, 'ana.ramirez@ilpsa.com', steven.id, 'Bienvenido2026', roleColaborador.id);
+  const sofia  = emp('Sofía Duarte','Coordinadora Regional', orgPaCoord.id, 'sofia.duarte@ilpsa.com', steven.id, 'Bienvenido2026', roleColaborador.id);
+  const employees = [steven, luis, maria, carlos, ana, sofia];
+
+  const mciCorp = {id:uid(), parent:null, title:'Elevar cumplimiento de auditorías de sistemas de gestión', statement:'De 82% a 95% de cumplimiento de auditorías SMETA para el cierre de Q4', level:'corporate', owner:steven.id, orgUnitId:orgMC.id, baseline:82, target:95, current:72, uom:'%', startDate:'2026-01-01', targetDate:'2026-12-31', status:'at_risk'};
+  const mciDept = {id:uid(), parent:mciCorp.id, title:'Cerrar hallazgos de auditoría a tiempo', statement:'De 60% a 95% de hallazgos cerrados en menos de 7 días', level:'department', owner:luis.id, orgUnitId:orgGtMs.id, baseline:60, target:95, current:68, uom:'%', startDate:'2026-01-01', targetDate:'2026-12-31', status:'at_risk'};
+  const mciInd = {id:uid(), parent:mciDept.id, title:'Completar auditorías internas asignadas', statement:'De 3 a 5 auditorías internas completadas por mes', level:'individual', owner:luis.id, orgUnitId:orgGtMs.id, baseline:3, target:5, current:3, uom:'auditorías', startDate:'2026-01-01', targetDate:'2026-12-31', status:'off_track'};
+  const mcis = [mciCorp, mciDept, mciInd];
+
+  const leadMeasures = [
+    {id:uid(), mciId:mciDept.id, title:'Auditorías internas completadas', target:5, cadence:'weekly', responsible:luis.id},
+    {id:uid(), mciId:mciDept.id, title:'Hallazgos cerrados <7 días', target:95, cadence:'weekly', responsible:luis.id},
+  ];
+  const measureEntries = [
+    {id:uid(), leadMeasureId:leadMeasures[0].id, week:'2026-W28', value:3, reportedBy:luis.id},
+    {id:uid(), leadMeasureId:leadMeasures[1].id, week:'2026-W28', value:80, reportedBy:luis.id},
+  ];
+
+  const commitments = [
+    {id:uid(), week:'2026-W29', employeeId:luis.id, description:'Cerrar 2 hallazgos abiertos de la auditoría de junio', dueDate:'2026-07-24', status:'open'},
+    {id:uid(), week:'2026-W29', employeeId:maria.id, description:'Completar encuesta de satisfacción a 20 clientes', dueDate:'2026-07-25', status:'open'},
+    {id:uid(), week:'2026-W28', employeeId:luis.id, description:'Programar auditoría interna de julio', dueDate:'2026-07-18', status:'done'},
+    {id:uid(), week:'2026-W28', employeeId:carlos.id, description:'Enviar reporte de ahorro mensual', dueDate:'2026-07-17', status:'missed'},
+  ];
+
+  const tasks = [
+    {id:uid(), employeeId:luis.id, title:'Cerrar hallazgo crítico de auditoría', quadrant:1, dueDate:'2026-07-23', status:'pending', week:'2026-W30'},
+    {id:uid(), employeeId:luis.id, title:'Revisar PID del equipo', quadrant:2, dueDate:'2026-07-25', status:'pending', week:'2026-W30'},
+    {id:uid(), employeeId:maria.id, title:'Responder correos de proveedores', quadrant:3, dueDate:'2026-07-22', status:'pending', week:'2026-W30'},
+    {id:uid(), employeeId:steven.id, title:'Preparar reunión de rendición de cuentas regional', quadrant:2, dueDate:'2026-07-24', status:'pending', week:'2026-W30'},
+  ];
+
+  const evaluations = [
+    {id:uid(), employeeId:luis.id, evaluator:'Steven Ellis', type:'180', cycle:'2026-S1', scores:[{name:'Orientación a resultados',score:4.2},{name:'Trabajo en equipo',score:4.5}], comment:'Buen desempeño técnico, fortalecer seguimiento a compromisos.', status:'completed'},
+  ];
+
+  const oneOnOnes = [
+    {id:uid(), leaderId:steven.id, collaboratorId:luis.id, date:'2026-07-15', notes:'Revisamos avance de auditorías y prioridades de la semana.', agreements:[{description:'Enviar plan de cierre de hallazgos', dueDate:'2026-07-22', status:'open'}]},
+  ];
+
+  const developmentPlans = [
+    {id:uid(), employeeId:luis.id, year:2026, focusArea:'Auditoría interna avanzada', courses:[{title:'ISO 19011 Lead Auditor', status:'in_progress'}]},
+  ];
+
+  const recognitions = [
+    {id:uid(), fromId:steven.id, toId:maria.id, badge:'Enfoque en el cliente', message:'Excelente manejo de un caso complejo esta semana.', points:50, date:'2026-07-20'},
+    {id:uid(), fromId:luis.id, toId:carlos.id, badge:'Trabajo en equipo', message:'Gracias por el apoyo en el cierre de mes.', points:30, date:'2026-07-18'},
+  ];
+
+  const weeklyReports = [];
+
+  return {employees, roles, orgUnits, mcis, leadMeasures, measureEntries, commitments, tasks, evaluations, oneOnOnes, developmentPlans, recognitions, weeklyReports,
+    badges:['Enfoque en el cliente','Trabajo en equipo','Disciplina de ejecución','Liderazgo de principios','Innovación']};
+}
+
+async function loadState(){
+  try{
+    const res = await window.storage.get(STORAGE_KEY, true);
+    if(res && res.value){ state = JSON.parse(res.value); if(!state.weeklyReports) state.weeklyReports=[]; if(!state.roles) state.roles=[]; if(!state.orgUnits) state.orgUnits=[]; return; }
+  }catch(e){}
+  state = seedData();
+  for(const e of state.employees){
+    e.passwordHash = await hashPassword(e._pwPlain);
+    delete e._pwPlain;
+  }
+  await persist();
+}
+async function loadSession(){
+  try{
+    const res = await window.storage.get(SESSION_KEY, false);
+    if(res && res.value){ session = JSON.parse(res.value); return; }
+  }catch(e){}
+  session = null;
+}
+async function saveSession(){
+  await window.storage.set(SESSION_KEY, JSON.stringify(session), false);
+}
+
+let saveTimer=null;
+async function persist(){
+  try{
+    await window.storage.set(STORAGE_KEY, JSON.stringify(state), true);
+    showToast();
+  }catch(e){ console.error('Error guardando', e); }
+}
+function showToast(){
+  const t=document.getElementById('saveToast');
+  t.classList.add('show');
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>t.classList.remove('show'),1200);
+}
+
+/* ============================= HELPERS ============================= */
+function empName(id){ const e=state.employees.find(x=>x.id===id); return e?e.name:'—'; }
+function getEmp(id){ return state.employees.find(x=>x.id===id); }
+function fmtDate(d){ if(!d) return '—'; const dt=new Date(d+'T00:00:00'); return dt.toLocaleDateString('es-GT',{day:'2-digit',month:'short',year:'numeric'}); }
+function statusLabel(s){ return {on_track:'En curso',at_risk:'En riesgo',off_track:'Fuera de meta',achieved:'Alcanzada',open:'Abierto',done:'Cumplido',missed:'Incumplido',pending:'Pendiente',active:'Activo',completed:'Completado',in_progress:'En curso',draft:'Borrador',submitted:'Enviado',on_leave:'De permiso',suspended:'Suspendido',terminated:'Inactivo'}[s]||s; }
+function mciProgress(w){
+  const range = w.target-w.baseline;
+  if(range===0) return 0;
+  let p = ((w.current-w.baseline)/range)*100;
+  return Math.max(0,Math.min(100,Math.round(p)));
+}
+function currentIsoWeek(){
+  const d=new Date(); const target=new Date(d.valueOf());
+  const dayNr=(d.getDay()+6)%7; target.setDate(target.getDate()-dayNr+3);
+  const firstThursday=new Date(target.getFullYear(),0,4);
+  const diff=(target-firstThursday)/86400000;
+  const week=1+Math.round((diff-3)/7);
+  return `${target.getFullYear()}-W${String(week).padStart(2,'0')}`;
+}
+function addWeeks(weekStr, delta){
+  const [y,w] = weekStr.split('-W').map(Number);
+  let nw=w+delta, ny=y;
+  if(nw<1){ ny--; nw=52; } if(nw>52){ ny++; nw=1; }
+  return `${ny}-W${String(nw).padStart(2,'0')}`;
+}
+let selectedWeek = currentIsoWeek();
+
+/* ---- Organigrama ---- */
+function orgUnit(id){ return state.orgUnits.find(u=>u.id===id); }
+function orgUnitName(id){ const u=orgUnit(id); return u?u.name:'Sin asignar'; }
+function orgUnitPath(id){
+  let path=[]; let cur=orgUnit(id);
+  while(cur){ path.unshift(cur.name); cur = cur.parentId ? orgUnit(cur.parentId) : null; }
+  return path.length? path.join(' › ') : 'Sin asignar';
+}
+function orgUnitOptionsFlat(){
+  const result=[{value:'',label:'— Sin asignar —'}];
+  function walk(parentId, depth){
+    state.orgUnits.filter(u=>u.parentId===parentId).forEach(u=>{
+      result.push({value:u.id, label: '\u2003'.repeat(depth)+u.name});
+      walk(u.id, depth+1);
+    });
+  }
+  walk(null,0);
+  return result;
+}
+
+/* ============================= ROLES ============================= */
+function getRole(roleId){ return state.roles.find(r=>r.id===roleId) || state.roles.find(r=>r.accessLevel==='colaborador') || state.roles[0]; }
+function isManager(empId){ return state.employees.some(e=>e.manager===empId); }
+function isAdminAccount(emp){ return emp && emp.email && emp.email.toLowerCase()==='sellis@ilpsa.com'; }
+function currentEmployee(){ return getEmp(session.employeeId); }
+function currentRole(){
+  const emp = currentEmployee();
+  const role = getRole(emp.roleId);
+  if(role.accessLevel==='admin'){
+    return activeMode==='admin' ? 'admin' : 'gerente';
+  }
+  return role.accessLevel==='gerente' ? 'gerente' : 'colaborador';
+}
+function teamIds(rootId){
+  rootId = rootId || session.employeeId;
+  let result = [rootId];
+  let frontier = [rootId];
+  while(frontier.length){
+    const next=[];
+    state.employees.forEach(e=>{ if(frontier.includes(e.manager) && !result.includes(e.id)){ result.push(e.id); next.push(e.id); } });
+    frontier = next;
+  }
+  return result;
+}
+
+/* ============================= LOGIN GATE ============================= */
+let loginMode = 'normal'; // 'normal' | 'admin'
+function renderLogin(){
+  const gate=document.getElementById('loginGate');
+  document.getElementById('appShell').style.display='none';
+  gate.style.display='block';
+  gate.innerHTML = `
+    <div class="login-shell">
+      <div class="login-card">
+        <div class="brand">Franklin Covey ILP</div>
+        <div class="brand-sub">Instituto de Liderazgo y Productividad</div>
+        <div class="login-tabs">
+          <button class="tab-btn ${loginMode==='normal'?'active':''}" id="tabNormal">Ingresar</button>
+          <button class="tab-btn ${loginMode==='admin'?'active':''}" id="tabAdmin">Administrador</button>
+        </div>
+        <label>Correo electrónico</label>
+        <input type="email" id="loginEmail" placeholder="nombre@empresa.com" autocomplete="username">
+        <label>Contraseña</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+        <div class="login-error" id="loginError"></div>
+        <button class="btn primary" id="loginBtn" style="width:100%;">${loginMode==='admin'?'Ingresar como Administrador':'Ingresar'}</button>
+        <div class="login-hint">${loginMode==='admin'?'Acceso restringido a la cuenta de administración autorizada.':'Usa el correo y contraseña asignados por tu Gerente o Administrador.'}</div>
+      </div>
+    </div>`;
+  document.getElementById('tabNormal').onclick=()=>{loginMode='normal'; renderLogin();};
+  document.getElementById('tabAdmin').onclick=()=>{loginMode='admin'; renderLogin();};
+  document.getElementById('loginBtn').onclick = doLogin;
+  document.getElementById('loginPassword').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+}
+async function doLogin(){
+  const email=document.getElementById('loginEmail').value.trim().toLowerCase();
+  const pw=document.getElementById('loginPassword').value;
+  const errEl=document.getElementById('loginError');
+  errEl.textContent='';
+  if(!email || !pw){ errEl.textContent='Ingresa tu correo y tu contraseña.'; return; }
+
+  if(loginMode==='admin'){
+    if(email==='sellis@ilpsa.com' && pw==='julio,2026'){
+      const acct = state.employees.find(e=>isAdminAccount(e));
+      if(!acct){ errEl.textContent='No se encontró la cuenta de administrador.'; return; }
+      session = {employeeId: acct.id};
+      activeMode='admin';
+      await saveSession();
+      boot();
+    } else {
+      errEl.textContent='Acceso restringido: esta opción solo está disponible para la cuenta de administración autorizada.';
+    }
+    return;
+  }
+
+  const emp = state.employees.find(e=>e.email && e.email.toLowerCase()===email);
+  if(!emp){ errEl.textContent='Correo o contraseña incorrectos.'; return; }
+  if(emp.status!=='active'){ errEl.textContent='Esta cuenta está inactiva. Contacta a tu administrador.'; return; }
+  const hash = await hashPassword(pw);
+  if(hash!==emp.passwordHash){ errEl.textContent='Correo o contraseña incorrectos.'; return; }
+  session = {employeeId: emp.id};
+  activeMode = getRole(emp.roleId).accessLevel==='admin' ? 'admin' : 'normal';
+  await saveSession();
+  boot();
+}
+
+/* ============================= NAV ============================= */
+const NAV_ADMIN = [
+  {group:'Administración', items:[
+    {id:'adminUsers', label:'👥 Gestión de Usuarios'},
+    {id:'adminRoles', label:'🎭 Roles y Permisos'},
+    {id:'adminOrg', label:'🏢 Organigrama'},
+  ]},
+];
+const NAV_GERENTE = [
+  {group:'Enfoque semanal', items:[
+    {id:'dashboard', label:'📊 Dashboard Gerencial'},
+    {id:'mcis', label:'🎯 4DX / MCIs'},
+    {id:'accountability', label:'✅ Rendición de Cuentas Semanal'},
+  ]},
+  {group:'Personas', items:[
+    {id:'people', label:'🧑‍💼 Gestión de Personal'},
+    {id:'myOrg', label:'🏢 Mi Departamento'},
+    {id:'performance', label:'📈 Evaluación de Desempeño'},
+    {id:'oneonone', label:'🗣️ Reuniones Individuales'},
+    {id:'time', label:'🗂️ Gestión del Tiempo'},
+  ]},
+  {group:'Desarrollo y Reconocimiento', items:[
+    {id:'development', label:'🎓 Desarrollo de Talento'},
+    {id:'recognition', label:'🏅 Reconocimiento'},
+  ]},
+];
+const NAV_COLABORADOR = [
+  {group:'Mi semana', items:[
+    {id:'accountability', label:'✅ Mi Rendición de Cuentas Semanal'},
+    {id:'mcis', label:'🎯 Mis MCIs'},
+    {id:'time', label:'🗂️ Mi Gestión del Tiempo'},
+  ]},
+  {group:'Desarrollo y Reconocimiento', items:[
+    {id:'development', label:'🎓 Mi Desarrollo'},
+    {id:'recognition', label:'🏅 Reconocimiento'},
+  ]},
+];
+const PAGE_TITLES = {dashboard:'Dashboard Gerencial',mcis:'4DX / Gestión de MCIs',accountability:'Rendición de Cuentas Semanal',people:'Gestión de Personal',myOrg:'Mi Departamento',performance:'Evaluación de Desempeño',oneonone:'Reuniones Individuales',time:'Gestión del Tiempo',development:'Desarrollo de Talento',recognition:'Reconocimiento',adminUsers:'Gestión de Usuarios',adminRoles:'Roles y Permisos',adminOrg:'Organigrama'};
+
+let currentView=null;
+
+function navSetForRole(){
+  const role = currentRole();
+  if(role==='admin') return NAV_ADMIN;
+  return role==='gerente' ? NAV_GERENTE : NAV_COLABORADOR;
+}
+function renderNav(){
+  const nav=document.getElementById('navbar');
+  const navSet = navSetForRole();
+  if(!currentView || !navSet.some(g=>g.items.some(it=>it.id===currentView))) currentView = navSet[0].items[0].id;
+  let html = `<div class="brand">Franklin Covey ILP</div><div class="brand-sub">Instituto de Liderazgo y Productividad</div>`;
+  navSet.forEach(g=>{
+    html += `<div class="group-label">${g.group}</div>`;
+    g.items.forEach(it=>{
+      html += `<div class="item ${it.id===currentView?'active':''}" data-view="${it.id}">${it.label}</div>`;
+    });
+  });
+  nav.innerHTML = html;
+  nav.querySelectorAll('.item').forEach(el=>{
+    el.addEventListener('click', ()=>{ currentView=el.dataset.view; wizardStep=1; renderAll(); });
+  });
+}
+
+function renderAll(){
+  renderNav();
+  document.getElementById('pageTitle').textContent = PAGE_TITLES[currentView];
+  const emp = currentEmployee();
+  const empRole = getRole(emp.roleId);
+  const role = currentRole();
+  document.getElementById('userName').textContent = emp.name;
+  document.getElementById('userRole').textContent = role==='admin'?'Administrador':(role==='gerente'?'Gerente':'Colaborador');
+  document.getElementById('userAvatar').textContent = emp.name.split(' ').map(n=>n[0]).slice(0,2).join('');
+  const holder=document.getElementById('modeToggleHolder');
+  const canToggle = empRole.accessLevel==='admin' && isManager(emp.id);
+  if(canToggle){
+    holder.innerHTML = `<button class="switch-user" id="modeToggleBtn">${activeMode==='admin'?'Ver como Gerente':'Volver a Administración'}</button>`;
+    document.getElementById('modeToggleBtn').onclick=()=>{ activeMode = activeMode==='admin'?'normal':'admin'; currentView=null; renderAll(); };
+  } else { holder.innerHTML=''; }
+  const v = document.getElementById('view');
+  const renderers = {dashboard:renderDashboard, mcis:renderMcis, accountability:renderAccountability, people:renderPeople, myOrg:renderMyOrgChart, performance:renderPerformance, oneonone:renderOneOnOne, time:renderTime, development:renderDevelopment, recognition:renderRecognition, adminUsers:renderAdminUsers, adminRoles:renderAdminRoles, adminOrg:renderAdminOrgChart};
+  v.innerHTML='';
+  renderers[currentView]();
+}
+
+/* ============================= MODAL ============================= */
+function openModal(title, fields, initial, onSave, extraHtml){
+  const overlay=document.getElementById('modalOverlay');
+  const body=document.getElementById('modalBody');
+  let html = `<h3>${title}</h3><div id="modalFields">`;
+  fields.forEach(f=>{
+    const val = initial && initial[f.name]!==undefined ? initial[f.name] : (f.default!==undefined?f.default:'');
+    html += `<div class="field"><label>${f.label}</label>`;
+    if(f.type==='select'){
+      html += `<select id="mf_${f.name}">` + f.options.map(o=>{
+        const ov = typeof o==='object'?o.value:o; const ol=typeof o==='object'?o.label:o;
+        return `<option value="${ov}" ${String(ov)===String(val)?'selected':''}>${ol}</option>`;
+      }).join('') + `</select>`;
+    } else if(f.type==='textarea'){
+      html += `<textarea id="mf_${f.name}">${val}</textarea>`;
+    } else {
+      html += `<input id="mf_${f.name}" type="${f.type||'text'}" value="${val}">`;
+    }
+    html += `</div>`;
+  });
+  html += `</div>`;
+  if(extraHtml) html += extraHtml;
+  html += `<div class="modal-actions"><button class="btn ghost" id="modalCancel">Cancelar</button><button class="btn primary" id="modalSave">Guardar</button></div>`;
+  body.innerHTML = html;
+  overlay.classList.add('show');
+  document.getElementById('modalCancel').onclick = closeModal;
+  document.getElementById('modalSave').onclick = ()=>{
+    const result={};
+    fields.forEach(f=>{
+      const el=document.getElementById('mf_'+f.name);
+      result[f.name] = f.type==='number' ? parseFloat(el.value||0) : el.value;
+    });
+    onSave(result);
+  };
+}
+function closeModal(){ document.getElementById('modalOverlay').classList.remove('show'); }
+document.getElementById('modalOverlay').addEventListener('click', e=>{ if(e.target.id==='modalOverlay') closeModal(); });
+
+function employeeOptions(scopeIds){ const list = scopeIds ? state.employees.filter(e=>scopeIds.includes(e.id)) : state.employees; return list.map(e=>({value:e.id,label:e.name})); }
+
+/* ============================= DASHBOARD GERENCIAL ============================= */
+function renderDashboard(){
+  const v=document.getElementById('view');
+  const team = teamIds();
+  const mcis=state.mcis.filter(w=> team.includes(w.owner));
+  const avgCompliance = mcis.length? Math.round(mcis.reduce((s,w)=>s+mciProgress(w),0)/mcis.length) : 0;
+  const atRisk = mcis.filter(w=>w.status==='at_risk'||w.status==='off_track');
+  const teamRecognitions = state.recognitions.filter(r=>team.includes(r.toId)||team.includes(r.fromId));
+  const commitmentsThisWeek = state.commitments.filter(c=>c.week===selectedWeek && team.includes(c.employeeId));
+  const doneRate = commitmentsThisWeek.length? Math.round(100*commitmentsThisWeek.filter(c=>c.status==='done').length/commitmentsThisWeek.length):0;
+
+  const areaMap={};
+  mcis.forEach(w=>{ const key=w.orgUnitId||'none'; if(!areaMap[key]) areaMap[key]=[]; areaMap[key].push(w); });
+  const ranking = Object.entries(areaMap).map(([unitId,list])=>{
+    const avg = list.length? Math.round(list.reduce((s,w)=>s+mciProgress(w),0)/list.length) : 0;
+    return {area: unitId==='none'?'Sin asignar':orgUnitName(unitId), avg};
+  }).sort((a,b)=>b.avg-a.avg);
+
+  const topMci = mcis.find(w=>w.level==='corporate') || mcis.find(w=>w.level==='department') || mcis[0];
+  const teamReports = state.weeklyReports.filter(r=>r.week===selectedWeek && team.includes(r.employeeId) && r.status==='submitted');
+
+  v.innerHTML = `
+    <div class="subnote">Mostrando información de tu equipo (${team.length} personas, incluyéndote).</div>
+    ${topMci? `
+    <div class="panel">
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">MCI destacada de tu equipo</div>
+      <div style="font-family:'Fraunces';font-size:17px;font-weight:600;margin-bottom:10px;">${topMci.statement}</div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="progress-track" style="flex:1"><div class="progress-fill ${topMci.status==='off_track'?'off':topMci.status==='at_risk'?'risk':''}" style="width:${mciProgress(topMci)}%"></div></div>
+        <span style="font-family:'IBM Plex Mono';font-weight:500;">${mciProgress(topMci)}%</span>
+        <span class="pill ${topMci.status}">${statusLabel(topMci.status)}</span>
+      </div>
+    </div>`:'<div class="panel empty-row">Tu equipo aún no tiene MCIs registradas.</div>'}
+    <div class="kpi-grid">
+      <div class="kpi"><div class="lbl">Cumplimiento promedio de MCIs</div><div class="val">${avgCompliance}%</div></div>
+      <div class="kpi"><div class="lbl">MCIs en riesgo</div><div class="val">${atRisk.length}</div></div>
+      <div class="kpi"><div class="lbl">Cumplimiento de compromisos (semana)</div><div class="val">${doneRate}%</div></div>
+      <div class="kpi"><div class="lbl">Reportes semanales enviados</div><div class="val">${teamReports.length}/${team.length-1}</div></div>
+    </div>
+    <div class="content-grid">
+      <div class="panel">
+        <h3>Ranking por unidad organizacional</h3>
+        ${ranking.map(r=>`
+          <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;">
+            <span style="width:180px">${r.area}</span>
+            <div class="progress-track" style="flex:1"><div class="progress-fill ${r.avg<60?'off':r.avg<80?'risk':''}" style="width:${r.avg}%"></div></div>
+            <span style="font-family:'IBM Plex Mono';font-size:12px;width:36px;text-align:right;">${r.avg}%</span>
+          </div>`).join('') || '<div class="empty-row">Aún no hay MCIs registradas.</div>'}
+      </div>
+      <div class="panel">
+        <h3>Alertas de desviación</h3>
+        ${atRisk.length? atRisk.map(w=>`
+          <div style="display:flex;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;">
+            <span style="color:${w.status==='off_track'?'var(--critical)':'var(--risk)'}">●</span>
+            <div><strong>${w.title}</strong><div style="color:var(--muted);font-size:11.5px;">${orgUnitName(w.orgUnitId)} · ${mciProgress(w)}% de avance</div></div>
+          </div>`).join('') : '<div class="empty-row">Sin desviaciones activas.</div>'}
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Reconocimientos recientes en tu equipo</h3>
+      ${teamRecognitions.slice(-4).reverse().map(r=>`
+        <div class="wall-item"><span class="badge-tag">${r.badge}</span> ${empName(r.fromId)} reconoció a <strong>${empName(r.toId)}</strong> — "${r.message}"
+        <div class="meta">${fmtDate(r.date)} · +${r.points} pts</div></div>`).join('') || '<div class="empty-row">Aún no hay reconocimientos en tu equipo.</div>'}
+    </div>
+  `;
+}
+
+/* ============================= 4DX / MCIs ============================= */
+function renderMcis(){
+  const v=document.getElementById('view');
+  v.innerHTML = `
+    <div class="filter-bar">
+      <select id="mciLevelFilter"><option value="">Todos los niveles</option><option value="corporate">Corporativa</option><option value="department">Departamental</option><option value="individual">Individual</option></select>
+      <button class="btn primary" id="addMciBtn">+ Nueva MCI</button>
+    </div>
+    <div id="mciList"></div>
+  `;
+  document.getElementById('addMciBtn').onclick = ()=>openMciModal(null);
+  document.getElementById('mciLevelFilter').onchange = renderMciList;
+  renderMciList();
+}
+function renderMciList(){
+  const filter=document.getElementById('mciLevelFilter').value;
+  const scope = currentRole()!=='colaborador' ? teamIds() : [session.employeeId];
+  const list=state.mcis.filter(w=> (!filter || w.level===filter) && scope.includes(w.owner));
+  const container=document.getElementById('mciList');
+  if(!list.length){ container.innerHTML='<div class="panel"><div class="empty-row">No hay MCIs para este filtro. Crea la primera.</div></div>'; return; }
+  container.innerHTML = list.map(w=>{
+    const lms = state.leadMeasures.filter(lm=>lm.mciId===w.id);
+    return `
+    <div class="panel">
+      <h3>${w.title} <span class="pill ${w.status}">${statusLabel(w.status)}</span></h3>
+      <div class="subnote">${w.statement} — Nivel: ${w.level==='corporate'?'Corporativa':w.level==='department'?'Departamental':'Individual'} · Unidad: ${orgUnitPath(w.orgUnitId)} · Dueño: ${empName(w.owner)}</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div class="progress-track" style="flex:1"><div class="progress-fill ${w.status==='off_track'?'off':w.status==='at_risk'?'risk':''}" style="width:${mciProgress(w)}%"></div></div>
+        <span style="font-family:'IBM Plex Mono';">${w.current}${w.uom} / ${w.target}${w.uom}</span>
+      </div>
+      <table><thead><tr><th>Indicador (lead/lag)</th><th>Cadencia</th><th>Meta</th><th>Responsable</th><th></th></tr></thead><tbody>
+        ${lms.map(lm=>`<tr><td>${lm.title}</td><td>${lm.cadence}</td><td>${lm.target}</td><td>${empName(lm.responsible)}</td>
+          <td><button class="link-btn" data-report="${lm.id}">Reportar avance</button></td></tr>`).join('') || `<tr><td colspan="5" class="empty-row">Sin indicadores aún.</td></tr>`}
+      </tbody></table>
+      <div style="display:flex;gap:8px;margin-top:10px;">
+        <button class="btn ghost" data-addlm="${w.id}">+ Indicador</button>
+        <button class="btn ghost" data-editmci="${w.id}">Editar MCI</button>
+        <button class="btn ghost" data-delmci="${w.id}" style="color:var(--critical)">Eliminar</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  container.querySelectorAll('[data-editmci]').forEach(b=>b.onclick=()=>openMciModal(state.mcis.find(w=>w.id===b.dataset.editmci)));
+  container.querySelectorAll('[data-delmci]').forEach(b=>b.onclick=async()=>{
+    if(!confirm('¿Eliminar esta MCI y sus indicadores?')) return;
+    const id=b.dataset.delmci;
+    state.mcis = state.mcis.filter(w=>w.id!==id);
+    state.leadMeasures = state.leadMeasures.filter(lm=>lm.mciId!==id);
+    await persist(); renderMciList();
+  });
+  container.querySelectorAll('[data-addlm]').forEach(b=>b.onclick=()=>openLeadMeasureModal(b.dataset.addlm));
+  container.querySelectorAll('[data-report]').forEach(b=>b.onclick=()=>openReportEntryModal(b.dataset.report));
+}
+function openMciModal(existing){
+  const scope = currentRole()!=='colaborador' ? teamIds() : [session.employeeId];
+  const fields=[
+    {name:'title',label:'Título de la MCI'},
+    {name:'statement',label:'Enunciado (de X a Y para fecha Z)',type:'textarea'},
+    {name:'level',label:'Nivel',type:'select',options:[{value:'corporate',label:'Corporativa'},{value:'department',label:'Departamental'},{value:'individual',label:'Individual'}]},
+    {name:'orgUnitId',label:'Unidad organizacional',type:'select',options:orgUnitOptionsFlat()},
+    {name:'owner',label:'Dueño',type:'select',options:employeeOptions(scope)},
+    {name:'baseline',label:'Valor de línea base',type:'number'},
+    {name:'target',label:'Valor meta',type:'number'},
+    {name:'current',label:'Valor actual',type:'number'},
+    {name:'uom',label:'Unidad de medida (%, unidades, etc.)'},
+    {name:'startDate',label:'Fecha de inicio',type:'date'},
+    {name:'targetDate',label:'Fecha meta',type:'date'},
+    {name:'status',label:'Estado',type:'select',options:[{value:'on_track',label:'En curso'},{value:'at_risk',label:'En riesgo'},{value:'off_track',label:'Fuera de meta'},{value:'achieved',label:'Alcanzada'}]},
+  ];
+  openModal(existing?'Editar MCI':'Nueva MCI', fields, existing, async(data)=>{
+    if(existing){ Object.assign(existing,data); }
+    else { data.id=uid(); data.parent=null; state.mcis.push(data); }
+    await persist(); closeModal(); renderMciList();
+  });
+}
+function openLeadMeasureModal(mciId){
+  const fields=[
+    {name:'title',label:'Título del indicador'},
+    {name:'measureType',label:'Tipo',type:'select',options:[{value:'lead',label:'Lead (predictivo)'},{value:'lag',label:'Lag (resultado)'}]},
+    {name:'target',label:'Meta',type:'number'},
+    {name:'cadence',label:'Cadencia',type:'select',options:[{value:'weekly',label:'Semanal'},{value:'biweekly',label:'Quincenal'},{value:'monthly',label:'Mensual'}]},
+    {name:'responsible',label:'Responsable',type:'select',options:employeeOptions(teamIds())},
+  ];
+  openModal('Nuevo indicador', fields, null, async(data)=>{
+    data.id=uid(); data.mciId=mciId;
+    state.leadMeasures.push(data);
+    await persist(); closeModal(); renderMciList();
+  });
+}
+function openReportEntryModal(lmId){
+  const fields=[
+    {name:'week',label:'Semana (ej. 2026-W30)', default:selectedWeek},
+    {name:'value',label:'Valor reportado',type:'number'},
+    {name:'reportedBy',label:'Reportado por',type:'select',options:employeeOptions(teamIds())},
+  ];
+  openModal('Reportar avance', fields, null, async(data)=>{
+    data.id=uid(); data.leadMeasureId=lmId;
+    state.measureEntries.push(data);
+    const lm = state.leadMeasures.find(x=>x.id===lmId);
+    const mci = state.mcis.find(w=>w.id===lm.mciId);
+    if(mci) mci.current = data.value;
+    await persist(); closeModal(); renderMciList();
+  });
+}
+
+/* ============================= RENDICIÓN DE CUENTAS SEMANAL ============================= */
+let wizardStep = 1;
+let currentDraft = null;
+
+function renderAccountability(){
+  if(currentRole()!=='colaborador'){ renderAccountabilityGerente(); }
+  else { renderAccountabilityColaborador(); }
+}
+
+function buildReminderMailto(emails, weekLabel, leaderName){
+  const subject = encodeURIComponent(`Recordatorio: Rendición de Cuentas Semanal — ${weekLabel}`);
+  const body = encodeURIComponent(`Hola,\n\nTe recuerdo ingresar a Franklin Covey ILP y enviar tu Rendición de Cuentas Semanal (${weekLabel}): tus actividades de la semana y tus compromisos para la próxima semana.\n\nGracias,\n${leaderName}`);
+  return `mailto:${emails.join(',')}?subject=${subject}&body=${body}`;
+}
+function renderAccountabilityGerente(){
+  const v=document.getElementById('view');
+  v.innerHTML = `
+    <div class="week-nav">
+      <button id="prevWeek">← Semana anterior</button>
+      <span class="week-label" id="weekLabel"></span>
+      <button id="nextWeek">Semana siguiente →</button>
+    </div>
+    <div class="panel">
+      <h3>Reportes semanales del equipo <span id="reminderAllHolder"></span></h3>
+      <table><thead><tr><th>Colaborador</th><th>Estado</th><th>Actividades reportadas</th><th>Despejes de camino</th><th></th></tr></thead>
+      <tbody id="teamReportRows"></tbody></table>
+    </div>
+    <div class="panel">
+      <h3>Compromisos de la semana (vista consolidada)</h3>
+      <table><thead><tr><th>Colaborador</th><th>Compromiso</th><th>Fecha límite</th><th>Estado</th></tr></thead>
+      <tbody id="commitmentRows"></tbody></table>
+    </div>
+    <div class="panel">
+      <h3>Histórico de cumplimiento por persona</h3>
+      <table><thead><tr><th>Colaborador</th><th>Compromisos totales</th><th>Cumplidos</th><th>% Cumplimiento</th></tr></thead>
+      <tbody id="historyRows"></tbody></table>
+    </div>
+  `;
+  document.getElementById('prevWeek').onclick=()=>{ selectedWeek=addWeeks(selectedWeek,-1); renderAccountabilityGerente(); };
+  document.getElementById('nextWeek').onclick=()=>{ selectedWeek=addWeeks(selectedWeek,1); renderAccountabilityGerente(); };
+  document.getElementById('weekLabel').textContent = selectedWeek;
+  renderTeamReportRows();
+  renderCommitmentRows();
+  renderAccountabilityHistory();
+}
+function renderTeamReportRows(){
+  const directs = state.employees.filter(e=>e.manager===session.employeeId);
+  const tbody=document.getElementById('teamReportRows');
+  const leaderName = empName(session.employeeId);
+  tbody.innerHTML = directs.length? directs.map(e=>{
+    const rep = state.weeklyReports.find(r=>r.employeeId===e.id && r.week===selectedWeek && r.status==='submitted');
+    const reminderLink = (!rep && e.email) ? `<a class="link-btn" href="${buildReminderMailto([e.email], selectedWeek, leaderName)}">✉ Recordar</a>` : '';
+    return `<tr>
+      <td>${e.name}</td>
+      <td><span class="pill ${rep?'submitted':'pending'}">${rep?'Enviado':'Pendiente'}</span></td>
+      <td>${rep? rep.activities.filter(a=>a.description).length+'/3' : '—'}</td>
+      <td>${rep && rep.roadblocks.length? `<span class="pill missed">${rep.roadblocks.length} pendiente(s)</span>`: (rep? 'Ninguno':'—')}</td>
+      <td>${rep? `<button class="link-btn" data-viewreport="${rep.id}">Ver reporte</button>` : reminderLink}</td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="5" class="empty-row">No tienes colaboradores directos asignados.</td></tr>`;
+  tbody.querySelectorAll('[data-viewreport]').forEach(b=>b.onclick=()=>viewSubmittedReport(b.dataset.viewreport));
+
+  const pending = directs.filter(e=> e.email && !state.weeklyReports.some(r=>r.employeeId===e.id && r.week===selectedWeek && r.status==='submitted'));
+  const holder=document.getElementById('reminderAllHolder');
+  holder.innerHTML = pending.length? `<a class="btn accent" style="font-size:11.5px;padding:4px 10px;" href="${buildReminderMailto(pending.map(e=>e.email), selectedWeek, leaderName)}">✉ Recordar a todos los pendientes (${pending.length})</a>` : '';
+}
+function viewSubmittedReport(reportId){
+  const rep = state.weeklyReports.find(r=>r.id===reportId);
+  const overlay=document.getElementById('modalOverlay'); const body=document.getElementById('modalBody');
+  body.innerHTML = `
+    <h3>Reporte de ${empName(rep.employeeId)} — ${rep.week}</h3>
+    <div class="report-block"><h4>Actividades de la semana</h4>
+      ${rep.activities.filter(a=>a.description).map(a=>`<div class="activity-slot filled"><div class="slot-desc">${a.description}</div><div class="slot-comment">${a.comment||''}</div></div>`).join('') || '<div class="empty-row">Sin actividades registradas.</div>'}
+    </div>
+    <div class="report-block"><h4>Compromisos para la próxima semana</h4>
+      ${rep.nextCommitments.filter(c=>c.description).map(c=>`<div class="activity-slot filled"><div class="slot-desc">${c.description}</div></div>`).join('') || '<div class="empty-row">Sin compromisos registrados.</div>'}
+    </div>
+    <div class="report-block"><h4>Despejes de camino</h4>
+      ${rep.roadblocks.length? rep.roadblocks.map(r=>`<div class="activity-slot filled" style="border-color:var(--risk)"><div class="slot-desc">${r.description}</div></div>`).join('') : '<div class="empty-row">No reportó obstáculos esta semana.</div>'}
+    </div>
+    <div class="modal-actions"><button class="btn primary" id="modalCancel">Cerrar</button></div>`;
+  overlay.classList.add('show');
+  document.getElementById('modalCancel').onclick = closeModal;
+}
+function renderCommitmentRows(){
+  const team = state.employees.filter(e=>e.manager===session.employeeId).map(e=>e.id);
+  const rows = state.commitments.filter(c=>c.week===selectedWeek && team.includes(c.employeeId));
+  const tbody=document.getElementById('commitmentRows');
+  if(!tbody) return;
+  tbody.innerHTML = rows.length? rows.map(c=>`
+    <tr><td>${empName(c.employeeId)}</td><td>${c.description}</td><td>${fmtDate(c.dueDate)}</td><td><span class="pill ${c.status}">${statusLabel(c.status)}</span></td></tr>
+  `).join('') : `<tr><td colspan="4" class="empty-row">Sin compromisos registrados para esta semana.</td></tr>`;
+}
+function renderAccountabilityHistory(){
+  const team = state.employees.filter(e=>e.manager===session.employeeId).map(e=>e.id);
+  const tbody=document.getElementById('historyRows');
+  const byEmp={};
+  state.commitments.filter(c=>team.includes(c.employeeId)).forEach(c=>{
+    byEmp[c.employeeId]=byEmp[c.employeeId]||{total:0,done:0};
+    byEmp[c.employeeId].total++;
+    if(c.status==='done') byEmp[c.employeeId].done++;
+  });
+  const rows=Object.entries(byEmp);
+  tbody.innerHTML = rows.length? rows.map(([empId,st])=>`
+    <tr><td>${empName(empId)}</td><td>${st.total}</td><td>${st.done}</td><td>${Math.round(100*st.done/st.total)}%</td></tr>
+  `).join('') : `<tr><td colspan="4" class="empty-row">Sin histórico todavía.</td></tr>`;
+}
+
+const WIZARD_STEPS = ['Actividades de la semana','Compromisos próxima semana','Despejes de camino','Revisar y enviar'];
+
+function getOrCreateDraft(){
+  let d = state.weeklyReports.find(r=>r.employeeId===session.employeeId && r.week===selectedWeek);
+  if(!d){
+    d = {id:uid(), employeeId:session.employeeId, week:selectedWeek, activities:[{},{},{}], nextCommitments:[{},{},{}], roadblocks:[], status:'draft', submittedAt:null};
+    state.weeklyReports.push(d);
+  }
+  if(!d.activities) d.activities=[{},{},{}];
+  if(!d.nextCommitments) d.nextCommitments=[{},{},{}];
+  if(!d.roadblocks) d.roadblocks=[];
+  return d;
+}
+
+function renderAccountabilityColaborador(){
+  const v=document.getElementById('view');
+  currentDraft = getOrCreateDraft();
+
+  if(currentDraft.status==='submitted'){
+    renderSubmittedConfirmation(v);
+    return;
+  }
+
+  v.innerHTML = `
+    <div class="week-nav">
+      <button id="prevWeekC">← Semana anterior</button>
+      <span class="week-label" id="weekLabelC"></span>
+      <button id="nextWeekC">Semana siguiente →</button>
+    </div>
+    <div class="step-labels" id="stepLabels"></div>
+    <div class="step-progress" id="stepProgress"></div>
+    <div class="panel" id="wizardPanel"></div>
+  `;
+  document.getElementById('prevWeekC').onclick=()=>{ selectedWeek=addWeeks(selectedWeek,-1); wizardStep=1; renderAccountabilityColaborador(); };
+  document.getElementById('nextWeekC').onclick=()=>{ selectedWeek=addWeeks(selectedWeek,1); wizardStep=1; renderAccountabilityColaborador(); };
+  document.getElementById('weekLabelC').textContent = selectedWeek;
+
+  document.getElementById('stepLabels').innerHTML = WIZARD_STEPS.map((s,i)=>`<span>${i+1}. ${s}</span>`).join('');
+  document.getElementById('stepProgress').innerHTML = WIZARD_STEPS.map((s,i)=>`<div class="step-dot ${i+1<wizardStep?'done':i+1===wizardStep?'current':''}"></div>`).join('');
+
+  const panel = document.getElementById('wizardPanel');
+  if(wizardStep===1) renderStepActivities(panel);
+  else if(wizardStep===2) renderStepNextCommitments(panel);
+  else if(wizardStep===3) renderStepRoadblocks(panel);
+  else if(wizardStep===4) renderStepReview(panel);
+}
+
+function renderStepActivities(panel){
+  panel.innerHTML = `
+    <h3>Actividades realizadas esta semana</h3>
+    <div class="subnote">Describe idealmente 3 actividades relevantes de tu semana y agrega un comentario sobre cada una (resultado, evidencia u observación).</div>
+    <div id="activitySlots"></div>
+    <div class="wizard-actions"><span></span><button class="btn primary" id="toStep2">Siguiente →</button></div>
+  `;
+  renderActivitySlots();
+  document.getElementById('toStep2').onclick = ()=>{ wizardStep=2; renderAccountabilityColaborador(); };
+}
+function renderActivitySlots(){
+  const c=document.getElementById('activitySlots');
+  c.innerHTML = currentDraft.activities.map((a,i)=>`
+    <div class="activity-slot ${a.description?'filled':''}">
+      <div class="slot-title">Actividad ${i+1}</div>
+      ${a.description? `<div class="slot-desc">${a.description}</div><div class="slot-comment">${a.comment||''}</div>` : `<div class="empty-row" style="padding:0;">Aún no se ha registrado.</div>`}
+      <div style="margin-top:8px;"><button class="link-btn" data-editact="${i}">${a.description?'Editar':'Agregar'}</button>${a.description?` <button class="link-btn" style="color:var(--critical)" data-delact="${i}">Quitar</button>`:''}</div>
+    </div>`).join('');
+  c.querySelectorAll('[data-editact]').forEach(b=>b.onclick=()=>{
+    const i=parseInt(b.dataset.editact);
+    openModal(`Actividad ${i+1}`, [{name:'description',label:'Descripción de la actividad'},{name:'comment',label:'Comentario (resultado, evidencia, observación)',type:'textarea'}], currentDraft.activities[i], async(data)=>{
+      currentDraft.activities[i]=data; await persist(); closeModal(); renderActivitySlots();
+    });
+  });
+  c.querySelectorAll('[data-delact]').forEach(b=>b.onclick=async()=>{
+    const i=parseInt(b.dataset.delact); currentDraft.activities[i]={}; await persist(); renderActivitySlots();
+  });
+}
+function renderStepNextCommitments(panel){
+  panel.innerHTML = `
+    <h3>Compromisos para la próxima semana</h3>
+    <div class="subnote">Define idealmente 3 compromisos que asumirás para la semana entrante (${addWeeks(selectedWeek,1)}).</div>
+    <div id="commitSlots"></div>
+    <div class="wizard-actions"><button class="btn ghost" id="toStep1">← Atrás</button><button class="btn primary" id="toStep3">Siguiente →</button></div>
+  `;
+  renderCommitSlots();
+  document.getElementById('toStep1').onclick=()=>{ wizardStep=1; renderAccountabilityColaborador(); };
+  document.getElementById('toStep3').onclick=()=>{ wizardStep=3; renderAccountabilityColaborador(); };
+}
+function renderCommitSlots(){
+  const c=document.getElementById('commitSlots');
+  c.innerHTML = currentDraft.nextCommitments.map((cm,i)=>`
+    <div class="activity-slot ${cm.description?'filled':''}">
+      <div class="slot-title">Compromiso ${i+1}</div>
+      ${cm.description? `<div class="slot-desc">${cm.description}</div>` : `<div class="empty-row" style="padding:0;">Aún no se ha registrado.</div>`}
+      <div style="margin-top:8px;"><button class="link-btn" data-editcm="${i}">${cm.description?'Editar':'Agregar'}</button>${cm.description?` <button class="link-btn" style="color:var(--critical)" data-delcm="${i}">Quitar</button>`:''}</div>
+    </div>`).join('');
+  c.querySelectorAll('[data-editcm]').forEach(b=>b.onclick=()=>{
+    const i=parseInt(b.dataset.editcm);
+    openModal(`Compromiso ${i+1}`, [{name:'description',label:'Descripción del compromiso'}], currentDraft.nextCommitments[i], async(data)=>{
+      currentDraft.nextCommitments[i]=data; await persist(); closeModal(); renderCommitSlots();
+    });
+  });
+  c.querySelectorAll('[data-delcm]').forEach(b=>b.onclick=async()=>{
+    const i=parseInt(b.dataset.delcm); currentDraft.nextCommitments[i]={}; await persist(); renderCommitSlots();
+  });
+}
+function renderStepRoadblocks(panel){
+  const hasAny = currentDraft.roadblocks.length>0;
+  panel.innerHTML = `
+    <h3>Despejes de camino</h3>
+    <div class="subnote">Si tienes obstáculos que tu líder debe ayudarte a resolver, regístralos aquí. Si no tienes ninguno esta semana, puedes continuar sin agregar.</div>
+    <div id="roadblockList"></div>
+    <button class="btn ghost" id="addRoadblockBtn" style="margin-top:6px;">+ Agregar despeje de camino</button>
+    <div class="wizard-actions"><button class="btn ghost" id="toStep2b">← Atrás</button><button class="btn primary" id="toStep4">${hasAny?'Siguiente →':'No tengo despejes — continuar →'}</button></div>
+  `;
+  renderRoadblockList();
+  document.getElementById('addRoadblockBtn').onclick = ()=>{
+    openModal('Nuevo despeje de camino', [{name:'description',label:'Describe el obstáculo',type:'textarea'}], null, async(data)=>{
+      currentDraft.roadblocks.push(data); await persist(); closeModal(); renderStepRoadblocks(panel);
+    });
+  };
+  document.getElementById('toStep2b').onclick=()=>{ wizardStep=2; renderAccountabilityColaborador(); };
+  document.getElementById('toStep4').onclick=()=>{ wizardStep=4; renderAccountabilityColaborador(); };
+}
+function renderRoadblockList(){
+  const c=document.getElementById('roadblockList');
+  if(!currentDraft.roadblocks.length){ c.innerHTML = `<div class="roadblock-empty">No tienes despejes de camino registrados esta semana.</div>`; return; }
+  c.innerHTML = currentDraft.roadblocks.map((r,i)=>`
+    <div class="activity-slot filled" style="border-color:var(--risk)">
+      <div class="slot-desc">${r.description}</div>
+      <div style="margin-top:6px;"><button class="link-btn" style="color:var(--critical)" data-delrb="${i}">Quitar</button></div>
+    </div>`).join('');
+  c.querySelectorAll('[data-delrb]').forEach(b=>b.onclick=async()=>{
+    currentDraft.roadblocks.splice(parseInt(b.dataset.delrb),1); await persist(); renderRoadblockList();
+  });
+}
+function renderStepReview(panel){
+  const d=currentDraft;
+  panel.innerHTML = `
+    <h3>Reporte generado — semana ${d.week}</h3>
+    <div class="subnote">Revisa la información antes de enviarla. Puedes volver a cualquier paso para modificarla.</div>
+    <div class="report-block"><h4>Actividades de la semana <button class="link-btn" data-goto="1">Editar</button></h4>
+      ${d.activities.filter(a=>a.description).map(a=>`<div class="activity-slot filled"><div class="slot-desc">${a.description}</div><div class="slot-comment">${a.comment||''}</div></div>`).join('') || '<div class="empty-row">Sin actividades registradas.</div>'}
+    </div>
+    <div class="report-block"><h4>Compromisos para la próxima semana <button class="link-btn" data-goto="2">Editar</button></h4>
+      ${d.nextCommitments.filter(c=>c.description).map(c=>`<div class="activity-slot filled"><div class="slot-desc">${c.description}</div></div>`).join('') || '<div class="empty-row">Sin compromisos registrados.</div>'}
+    </div>
+    <div class="report-block"><h4>Despejes de camino <button class="link-btn" data-goto="3">Editar</button></h4>
+      ${d.roadblocks.length? d.roadblocks.map(r=>`<div class="activity-slot filled" style="border-color:var(--risk)"><div class="slot-desc">${r.description}</div></div>`).join('') : '<div class="empty-row">No se reportaron obstáculos esta semana.</div>'}
+    </div>
+    <div class="wizard-actions"><button class="btn ghost" id="toStep3c">← Atrás</button><button class="btn accent" id="submitReport">Enviar reporte</button></div>
+  `;
+  panel.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>{ wizardStep=parseInt(b.dataset.goto); renderAccountabilityColaborador(); });
+  document.getElementById('toStep3c').onclick=()=>{ wizardStep=3; renderAccountabilityColaborador(); };
+  document.getElementById('submitReport').onclick = async()=>{
+    d.status='submitted';
+    d.submittedAt = new Date().toISOString();
+    const nextWeek = addWeeks(d.week,1);
+    d.nextCommitments.filter(c=>c.description).forEach(c=>{
+      state.commitments.push({id:uid(), week:nextWeek, employeeId:session.employeeId, description:c.description, dueDate:'', status:'open'});
+    });
+    await persist();
+    renderAccountabilityColaborador();
+  };
+}
+function renderSubmittedConfirmation(v){
+  const d=currentDraft;
+  v.innerHTML = `
+    <div class="panel confirm-box">
+      <div class="check">✓</div>
+      <h3 style="justify-content:center;">Reporte enviado</h3>
+      <div class="subnote">Tu rendición de cuentas de la semana ${d.week} fue enviada a tu líder el ${new Date(d.submittedAt).toLocaleString('es-GT')}.</div>
+      <button class="btn ghost" id="viewMyReport">Ver reporte enviado</button>
+    </div>
+  `;
+  document.getElementById('viewMyReport').onclick = ()=>viewSubmittedReport(d.id);
+}
+
+/* ============================= GESTIÓN DE PERSONAL (Gerente, solo su equipo) ============================= */
+function renderPeople(){
+  const v=document.getElementById('view');
+  v.innerHTML = `
+    <div class="filter-bar"><button class="btn primary" id="addEmpBtn">+ Nuevo colaborador</button></div>
+    <div class="subnote">Los colaboradores que crees aquí quedarán asignados directamente a tu equipo, con su propio correo y contraseña de acceso. Solo el Administrador puede cambiar su rol.</div>
+    <div class="panel"><table><thead><tr><th>Nombre</th><th>Correo</th><th>Puesto</th><th>Unidad organizacional</th><th>Estado</th><th></th></tr></thead>
+    <tbody id="empRows"></tbody></table></div>
+  `;
+  document.getElementById('addEmpBtn').onclick=()=>openEmployeeModal(null);
+  renderEmpRows();
+}
+function renderEmpRows(){
+  const list = state.employees.filter(e=>e.manager===session.employeeId);
+  const tbody=document.getElementById('empRows');
+  tbody.innerHTML = list.length? list.map(e=>`
+    <tr>
+      <td>${e.name}</td><td>${e.email||'—'}</td><td>${e.pos}</td><td>${orgUnitPath(e.orgUnitId)}</td>
+      <td><span class="pill ${e.status}">${statusLabel(e.status)}</span></td>
+      <td><button class="icon-btn edit" data-editemp="${e.id}">✎</button><button class="icon-btn" data-delemp="${e.id}">✕</button></td>
+    </tr>`).join('') : `<tr><td colspan="6" class="empty-row">Aún no tienes colaboradores directos. Agrega el primero.</td></tr>`;
+  tbody.querySelectorAll('[data-editemp]').forEach(b=>b.onclick=()=>openEmployeeModal(state.employees.find(e=>e.id===b.dataset.editemp)));
+  tbody.querySelectorAll('[data-delemp]').forEach(b=>b.onclick=async()=>{
+    if(!confirm('¿Eliminar este colaborador?')) return;
+    state.employees = state.employees.filter(e=>e.id!==b.dataset.delemp);
+    await persist(); renderEmpRows();
+  });
+}
+function openEmployeeModal(existing){
+  const fields=[
+    {name:'name',label:'Nombre completo'},
+    {name:'email',label:'Correo electrónico', type:'email'},
+    {name:'pos',label:'Puesto'},
+    {name:'orgUnitId',label:'Unidad organizacional',type:'select',options:orgUnitOptionsFlat()},
+    {name:'hireDate',label:'Fecha de ingreso',type:'date'},
+    {name:'status',label:'Estado',type:'select',options:[{value:'active',label:'Activo'},{value:'on_leave',label:'De permiso'},{value:'terminated',label:'Inactivo'}]},
+  ];
+  const extra = !existing
+    ? `<div class="field"><label>Contraseña inicial</label><input type="password" id="mf_initialPassword"></div><div class="subnote" style="margin-top:-4px;">Este colaborador quedará asignado a tu equipo con rol Colaborador.</div>`
+    : `<div class="subnote">Jefe directo: tú. Para restablecer contraseña o cambiar el rol de este colaborador, contacta al administrador de la plataforma.</div>`;
+  openModal(existing?'Editar colaborador':'Nuevo colaborador', fields, existing, async(data)=>{
+    if(existing){
+      Object.assign(existing,data);
+      await persist(); closeModal(); renderEmpRows();
+    } else {
+      const pwEl=document.getElementById('mf_initialPassword');
+      const pw = pwEl? pwEl.value : '';
+      if(!pw || pw.length<4){ alert('La contraseña inicial debe tener al menos 4 caracteres.'); return; }
+      if(state.employees.some(e=>e.email && e.email.toLowerCase()===data.email.toLowerCase())){ alert('Ya existe un usuario con ese correo electrónico.'); return; }
+      data.id=uid();
+      data.manager = session.employeeId;
+      data.roleId = (state.roles.find(r=>r.accessLevel==='colaborador')||state.roles[0]).id;
+      data.passwordHash = await hashPassword(pw);
+      state.employees.push(data);
+      await persist(); closeModal(); renderEmpRows();
+    }
+  }, extra);
+}
+
+/* ============================= ADMINISTRADOR: GESTIÓN DE USUARIOS ============================= */
+function renderAdminUsers(){
+  const v=document.getElementById('view');
+  v.innerHTML = `
+    <div class="subnote">Esta pantalla solo es visible para la cuenta de administración. Aquí puedes ver y administrar a todos los usuarios de la plataforma, incluyendo su rol.</div>
+    <div class="filter-bar">
+      <input type="text" id="userSearch" placeholder="Buscar por nombre o correo...">
+      <select id="roleFilterAdmin"><option value="">Todos los roles</option>${state.roles.map(r=>`<option value="${r.id}">${r.name}</option>`).join('')}</select>
+      <select id="statusFilterAdmin"><option value="">Todos los estados</option><option value="active">Activo</option><option value="on_leave">De permiso</option><option value="suspended">Suspendido</option><option value="terminated">Inactivo</option></select>
+      <button class="btn primary" id="addUserBtn">+ Nuevo usuario</button>
+    </div>
+    <div class="panel">
+      <table><thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Unidad organizacional</th><th>Jefe</th><th>Estado</th><th></th></tr></thead>
+      <tbody id="adminUserRows"></tbody></table>
+    </div>
+  `;
+  document.getElementById('addUserBtn').onclick=()=>openAdminUserModal(null);
+  ['userSearch','roleFilterAdmin','statusFilterAdmin'].forEach(id=>document.getElementById(id).addEventListener('input', renderAdminUserRows));
+  renderAdminUserRows();
+}
+function renderAdminUserRows(){
+  const q=document.getElementById('userSearch').value.trim().toLowerCase();
+  const rf=document.getElementById('roleFilterAdmin').value;
+  const sf=document.getElementById('statusFilterAdmin').value;
+  const list = state.employees.filter(e=>{
+    if(q && !(e.name.toLowerCase().includes(q) || (e.email||'').toLowerCase().includes(q))) return false;
+    if(rf && e.roleId!==rf) return false;
+    if(sf && e.status!==sf) return false;
+    return true;
+  });
+  const tbody=document.getElementById('adminUserRows');
+  tbody.innerHTML = list.length? list.map(e=>{
+    const role = getRole(e.roleId);
+    const protectedAcct = isAdminAccount(e);
+    return `<tr>
+      <td>${e.name}</td><td>${e.email||'—'}</td>
+      <td><span class="pill lvl-${role.accessLevel}">${role.name}</span></td>
+      <td>${orgUnitPath(e.orgUnitId)}</td><td>${e.manager?empName(e.manager):'—'}</td>
+      <td><span class="pill ${e.status}">${statusLabel(e.status)}</span></td>
+      <td>
+        <button class="icon-btn edit" data-adminedit="${e.id}" title="Editar">✎</button>
+        <button class="icon-btn edit" data-resetpw="${e.id}" title="Restablecer contraseña">🔑</button>
+        ${!protectedAcct?`<button class="icon-btn edit" data-togglestatus="${e.id}" title="${e.status==='active'?'Suspender':'Activar'}">${e.status==='active'?'⏸':'▶'}</button>`:''}
+        ${!protectedAcct?`<button class="icon-btn" data-admindel="${e.id}" title="Eliminar">✕</button>`:''}
+      </td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="7" class="empty-row">No se encontraron usuarios con estos filtros.</td></tr>`;
+
+  tbody.querySelectorAll('[data-adminedit]').forEach(b=>b.onclick=()=>openAdminUserModal(state.employees.find(e=>e.id===b.dataset.adminedit)));
+  tbody.querySelectorAll('[data-resetpw]').forEach(b=>b.onclick=()=>openResetPasswordModal(b.dataset.resetpw));
+  tbody.querySelectorAll('[data-togglestatus]').forEach(b=>b.onclick=async()=>{
+    const emp=state.employees.find(e=>e.id===b.dataset.togglestatus);
+    emp.status = emp.status==='active' ? 'suspended' : 'active';
+    await persist(); renderAdminUserRows();
+  });
+  tbody.querySelectorAll('[data-admindel]').forEach(b=>b.onclick=async()=>{
+    if(!confirm('¿Eliminar este usuario de la plataforma? Esta acción no se puede deshacer.')) return;
+    const id=b.dataset.admindel;
+    state.employees.forEach(e=>{ if(e.manager===id) e.manager=null; });
+    state.employees = state.employees.filter(e=>e.id!==id);
+    await persist(); renderAdminUserRows();
+  });
+}
+function openAdminUserModal(existing){
+  const fields=[
+    {name:'name',label:'Nombre completo'},
+    {name:'email',label:'Correo electrónico', type:'email'},
+    {name:'pos',label:'Puesto'},
+    {name:'roleId',label:'Rol',type:'select',options:state.roles.map(r=>({value:r.id,label:r.name}))},
+    {name:'orgUnitId',label:'Unidad organizacional',type:'select',options:orgUnitOptionsFlat()},
+    {name:'manager',label:'Jefe directo',type:'select',options:[{value:'',label:'— Ninguno —'},...state.employees.filter(e=>!existing||e.id!==existing.id).map(e=>({value:e.id,label:e.name}))]},
+    {name:'status',label:'Estado',type:'select',options:[{value:'active',label:'Activo'},{value:'on_leave',label:'De permiso'},{value:'suspended',label:'Suspendido'},{value:'terminated',label:'Inactivo'}]},
+  ];
+  const extra = !existing
+    ? `<div class="field"><label>Contraseña inicial</label><input type="password" id="mf_initialPassword"></div>`
+    : `<div class="subnote">Para cambiar la contraseña usa el botón 🔑 "Restablecer contraseña" en la tabla.</div>`;
+  openModal(existing?'Editar usuario':'Nuevo usuario', fields, existing, async(data)=>{
+    if(existing){
+      Object.assign(existing, data);
+      await persist(); closeModal(); renderAdminUserRows();
+    } else {
+      const pwEl=document.getElementById('mf_initialPassword');
+      const pw = pwEl? pwEl.value : '';
+      if(!pw || pw.length<4){ alert('La contraseña inicial debe tener al menos 4 caracteres.'); return; }
+      if(state.employees.some(e=>e.email && e.email.toLowerCase()===data.email.toLowerCase())){ alert('Ya existe un usuario con ese correo electrónico.'); return; }
+      data.id=uid();
+      data.passwordHash = await hashPassword(pw);
+      data.hireDate = new Date().toISOString().slice(0,10);
+      if(!data.manager) data.manager=null;
+      state.employees.push(data);
+      await persist(); closeModal(); renderAdminUserRows();
+    }
+  }, extra);
+}
+function openResetPasswordModal(empId){
+  openModal('Restablecer contraseña', [{name:'newPassword', label:'Nueva contraseña', type:'password'}], null, async(data)=>{
+    if(!data.newPassword || data.newPassword.length<4){ alert('La contraseña debe tener al menos 4 caracteres.'); return; }
+    const emp = state.employees.find(e=>e.id===empId);
+    emp.passwordHash = await hashPassword(data.newPassword);
+    await persist(); closeModal();
+  });
+}
+
+/* ============================= ADMINISTRADOR: ROLES Y PERMISOS ============================= */
+function renderAdminRoles(){
+  const v=document.getElementById('view');
+  v.innerHTML = `
+    <div class="subnote">Catálogo de roles disponibles en la plataforma. El nivel de acceso determina qué pantallas ve cada usuario con ese rol.</div>
+    <div class="filter-bar"><button class="btn primary" id="addRoleBtn">+ Nuevo rol</button></div>
+    <div class="panel">
+      <table><thead><tr><th>Rol</th><th>Nivel de acceso</th><th>Descripción</th><th>Usuarios asignados</th><th></th></tr></thead>
+      <tbody id="roleRows"></tbody></table>
+    </div>
+  `;
+  document.getElementById('addRoleBtn').onclick=()=>openRoleModal(null);
+  renderRoleRows();
+}
+function renderRoleRows(){
+  const tbody=document.getElementById('roleRows');
+  const levelLabel = {admin:'Administrador',gerente:'Gerente',colaborador:'Colaborador'};
+  tbody.innerHTML = state.roles.map(r=>{
+    const count = state.employees.filter(e=>e.roleId===r.id).length;
+    return `<tr>
+      <td>${r.name}</td>
+      <td><span class="pill lvl-${r.accessLevel}">${levelLabel[r.accessLevel]}</span></td>
+      <td>${r.description||'—'}</td>
+      <td>${count}</td>
+      <td>
+        <button class="icon-btn edit" data-editrole="${r.id}">✎</button>
+        <button class="icon-btn" data-delrole="${r.id}">✕</button>
+      </td>
+    </tr>`;
+  }).join('');
+  tbody.querySelectorAll('[data-editrole]').forEach(b=>b.onclick=()=>openRoleModal(state.roles.find(r=>r.id===b.dataset.editrole)));
+  tbody.querySelectorAll('[data-delrole]').forEach(b=>b.onclick=async()=>{
+    const id=b.dataset.delrole;
+    const count = state.employees.filter(e=>e.roleId===id).length;
+    if(count>0){ alert(`Este rol tiene ${count} usuario(s) asignado(s). Reasígnalos a otro rol antes de eliminarlo.`); return; }
+    if(!confirm('¿Eliminar este rol?')) return;
+    state.roles = state.roles.filter(r=>r.id!==id);
+    await persist(); renderRoleRows();
+  });
+}
+function openRoleModal(existing){
+  const fields=[
+    {name:'name',label:'Nombre del rol'},
+    {name:'accessLevel',label:'Nivel de acceso',type:'select',options:[{value:'admin',label:'Administrador (control total de la plataforma)'},{value:'gerente',label:'Gerente (gestiona un equipo)'},{value:'colaborador',label:'Colaborador (gestiona su propia información)'}]},
+    {name:'description',label:'Descripción',type:'textarea'},
+  ];
+  openModal(existing?'Editar rol':'Nuevo rol', fields, existing, async(data)=>{
+    if(existing){ Object.assign(existing,data); }
+    else { data.id=uid(); state.roles.push(data); }
+    await persist(); closeModal(); renderRoleRows();
+  });
+}
+
+/* ============================= ADMINISTRADOR: ORGANIGRAMA ============================= */
+let orgDrillDownId = null; // null = organigrama institucional general; si tiene valor, estamos dentro de una estructura regional
+
+function renderAdminOrgChart(){
+  const v=document.getElementById('view');
+  orgDrillDownId = null;
+  v.innerHTML = `
+    <div class="subnote">Organigrama institucional de Industria La Popular. Muestra Gerencia General y todos los departamentos. Marca "Regional" en un puesto para llevar su propia estructura de países por separado — haz clic en "Ver estructura regional" para entrar a administrarla. Usa la caja punteada "+ Agregar" para crear cuadros rápidamente, o "⧉ Duplicar" para clonar uno parecido.</div>
+    <div class="panel" id="orgTreeContainer" style="overflow-x:auto;"></div>
+  `;
+  renderOrgTree();
+}
+
+function orgChartBoxHtml(unit, isDrillRoot, protectedRootId){
+  const stopHere = unit.isRegional && !isDrillRoot;
+  const occupants = state.employees.filter(e=>e.orgUnitId===unit.id).map(e=>e.name);
+  const directChildCount = state.orgUnits.filter(u=>u.parentId===unit.id).length;
+  const canDelete = unit.id !== protectedRootId;
+  return `
+    <div class="org-box ${unit.isRegional?'regional':''}">
+      <div class="org-box-title">${unit.name}</div>
+      <div class="org-box-type">${unit.type}</div>
+      ${occupants.length? `<div class="org-box-occupants">${occupants.join(', ')}</div>` : ''}
+      <label class="org-regional-check"><input type="checkbox" data-regionalcheck="${unit.id}" ${unit.isRegional?'checked':''}> Es un puesto Regional</label>
+      ${stopHere? `<button class="link-btn" data-drilldown="${unit.id}">Ver estructura regional (${directChildCount}) →</button>` : ''}
+      <div class="org-box-actions">
+        <button data-addchild="${unit.id}" title="Agregar sub-unidad">+</button>
+        <button data-duplicate="${unit.id}" title="Duplicar">⧉</button>
+        <button data-editunit="${unit.id}" title="Editar">✎</button>
+        ${canDelete? `<button data-delunit="${unit.id}" title="Eliminar">✕</button>` : ''}
+      </div>
+    </div>`;
+}
+function orgGhostBoxHtml(parentId){
+  return `<li><div class="org-box ghost" data-quickadd="${parentId||''}">+ Agregar</div></li>`;
+}
+function orgChartNodeHtml(unit, isDrillRoot, protectedRootId){
+  const stopHere = unit.isRegional && !isDrillRoot;
+  const children = stopHere ? [] : state.orgUnits.filter(u=>u.parentId===unit.id);
+  const childList = stopHere ? '' : children.map(c=>orgChartNodeHtml(c,false,protectedRootId)).join('') + orgGhostBoxHtml(unit.id);
+  return `<li>
+      ${orgChartBoxHtml(unit, isDrillRoot, protectedRootId)}
+      ${!stopHere? `<ul>${childList}</ul>` : ''}
+    </li>`;
+}
+function bindOrgChartEvents(container, rerender, protectedRootId){
+  container.querySelectorAll('[data-quickadd]').forEach(b=>b.onclick=()=>openOrgUnitModal(null, b.dataset.quickadd || null, rerender));
+  container.querySelectorAll('[data-addchild]').forEach(b=>b.onclick=()=>openOrgUnitModal(null, b.dataset.addchild, rerender));
+  container.querySelectorAll('[data-editunit]').forEach(b=>b.onclick=()=>openOrgUnitModal(state.orgUnits.find(u=>u.id===b.dataset.editunit), null, rerender));
+  container.querySelectorAll('[data-duplicate]').forEach(b=>b.onclick=async()=>{
+    const src=orgUnit(b.dataset.duplicate);
+    const copy={id:uid(), name:'Copia de '+src.name, type:src.type, parentId:src.parentId, isRegional:false};
+    state.orgUnits.push(copy);
+    await persist(); rerender();
+    openOrgUnitModal(copy, null, rerender);
+  });
+  container.querySelectorAll('[data-drilldown]').forEach(b=>b.onclick=()=>{ orgDrillDownId=b.dataset.drilldown; rerender(); });
+  container.querySelectorAll('[data-regionalcheck]').forEach(cb=>cb.onchange=async()=>{
+    const u=orgUnit(cb.dataset.regionalcheck);
+    u.isRegional = cb.checked;
+    await persist(); rerender();
+  });
+  container.querySelectorAll('[data-delunit]').forEach(b=>b.onclick=async()=>{
+    const id=b.dataset.delunit;
+    if(id===protectedRootId){ alert('No puedes eliminar tu propio departamento desde aquí. Pídele al Administrador que lo reestructure.'); return; }
+    const hasChildren = state.orgUnits.some(u=>u.parentId===id);
+    const hasEmployees = state.employees.some(e=>e.orgUnitId===id);
+    if(hasChildren){ alert('Esta unidad tiene sub-unidades. Elimina o reubica esas sub-unidades primero.'); return; }
+    if(hasEmployees && !confirm('Hay personas asignadas a esta unidad. Si la eliminas, quedarán sin unidad asignada. ¿Continuar?')) return;
+    if(!hasEmployees && !confirm('¿Eliminar esta unidad organizacional?')) return;
+    state.employees.forEach(e=>{ if(e.orgUnitId===id) e.orgUnitId=null; });
+    state.mcis.forEach(w=>{ if(w.orgUnitId===id) w.orgUnitId=null; });
+    state.orgUnits = state.orgUnits.filter(u=>u.id!==id);
+    if(orgDrillDownId===id) orgDrillDownId=null;
+    await persist(); rerender();
+  });
+}
+function renderOrgTree(){
+  const container=document.getElementById('orgTreeContainer');
+  if(orgDrillDownId && !orgUnit(orgDrillDownId)) orgDrillDownId = null;
+
+  if(orgDrillDownId){
+    const node = orgUnit(orgDrillDownId);
+    container.innerHTML = `
+      <div class="filter-bar"><button class="btn ghost" id="backToMainOrg">← Volver al organigrama general</button></div>
+      <div class="subnote">Estructura regional de "${node.name}" — agrega aquí los países y los puestos que le reportan a esta posición.</div>
+      <div class="orgchart"><ul>${orgChartNodeHtml(node, true, null)}</ul></div>
+    `;
+    document.getElementById('backToMainOrg').onclick=()=>{ orgDrillDownId=null; renderOrgTree(); };
+  } else {
+    const roots = state.orgUnits.filter(u=>!u.parentId);
+    container.innerHTML = `<div class="orgchart"><ul>${roots.map(r=>orgChartNodeHtml(r,false,null)).join('')}${orgGhostBoxHtml(null)}</ul></div>`;
+  }
+  bindOrgChartEvents(container, renderOrgTree, null);
+}
+function openOrgUnitModal(existing, parentId, onDone){
+  const fields=[
+    {name:'name',label:'Nombre'},
+    {name:'type',label:'Tipo',type:'select',options:['Gerencia General','Departamento','Puesto','País','Área funcional','Coordinación regional','Equipo','Otro']},
+  ];
+  openModal(existing?'Editar unidad':'Nueva unidad organizacional', fields, existing, async(data)=>{
+    if(existing){ Object.assign(existing,data); }
+    else { data.id=uid(); data.parentId = parentId || null; data.isRegional=false; state.orgUnits.push(data); }
+    await persist(); closeModal(); if(onDone) onDone();
+  });
+}
+
+/* ---- Gerente: organigrama de su propio departamento ---- */
+function renderMyOrgChart(){
+  const v=document.getElementById('view');
+  orgDrillDownId = null;
+  const emp = currentEmployee();
+  const rootId = emp.orgUnitId;
+  if(!rootId){
+    v.innerHTML = `<div class="panel empty-row">Tu usuario todavía no tiene una unidad organizacional asignada. Pídele al Administrador que te asigne una para poder construir aquí tu departamento.</div>`;
+    return;
+  }
+  v.innerHTML = `
+    <div class="subnote">Construye la estructura de tu propio departamento — agrega los puestos y equipos que te reportan. Queda reflejado también en el organigrama institucional que ve el Administrador.</div>
+    <div class="panel" id="myOrgTreeContainer" style="overflow-x:auto;"></div>
+  `;
+  renderMyOrgTree(rootId);
+}
+function renderMyOrgTree(rootId){
+  const container=document.getElementById('myOrgTreeContainer');
+  if(orgDrillDownId && !orgUnit(orgDrillDownId)) orgDrillDownId=null;
+  if(orgDrillDownId){
+    const node = orgUnit(orgDrillDownId);
+    container.innerHTML = `
+      <div class="filter-bar"><button class="btn ghost" id="backToMyOrg">← Volver a mi departamento</button></div>
+      <div class="subnote">Estructura regional de "${node.name}"</div>
+      <div class="orgchart"><ul>${orgChartNodeHtml(node, true, null)}</ul></div>`;
+    document.getElementById('backToMyOrg').onclick=()=>{ orgDrillDownId=null; renderMyOrgTree(rootId); };
+    bindOrgChartEvents(container, ()=>renderMyOrgTree(rootId), null);
+  } else {
+    const root = orgUnit(rootId);
+    if(!root){ container.innerHTML='<div class="empty-row">Tu unidad organizacional ya no existe. Contacta al Administrador.</div>'; return; }
+    container.innerHTML = `<div class="orgchart"><ul>${orgChartNodeHtml(root, false, rootId)}</ul></div>`;
+    bindOrgChartEvents(container, ()=>renderMyOrgTree(rootId), rootId);
+  }
+}
+
+/* ============================= DESEMPEÑO ============================= */
+function renderPerformance(){
+  const v=document.getElementById('view');
+  v.innerHTML = `<div class="filter-bar"><button class="btn primary" id="addEvalBtn">+ Nueva evaluación</button></div><div id="evalList"></div>`;
+  document.getElementById('addEvalBtn').onclick=()=>openEvalModal();
+  renderEvalList();
+}
+function renderEvalList(){
+  const team = teamIds();
+  const list = state.evaluations.filter(e=>team.includes(e.employeeId));
+  const c=document.getElementById('evalList');
+  c.innerHTML = list.length? list.map(ev=>`
+    <div class="panel">
+      <h3>${empName(ev.employeeId)} <span class="pill ${ev.status}">${statusLabel(ev.status)}</span></h3>
+      <div class="subnote">Evaluación ${ev.type}° · Evaluador: ${ev.evaluator} · Ciclo: ${ev.cycle}</div>
+      <table><thead><tr><th>Competencia</th><th>Puntaje</th></tr></thead><tbody>
+        ${ev.scores.map(s=>`<tr><td>${s.name}</td><td>${s.score}</td></tr>`).join('')}
+      </tbody></table>
+      <div class="subnote" style="margin-top:8px;">Retroalimentación: ${ev.comment}</div>
+      <button class="btn ghost" data-delev="${ev.id}" style="color:var(--critical)">Eliminar</button>
+    </div>`).join('') : `<div class="panel empty-row">Sin evaluaciones registradas para tu equipo.</div>`;
+  c.querySelectorAll('[data-delev]').forEach(b=>b.onclick=async()=>{
+    state.evaluations = state.evaluations.filter(e=>e.id!==b.dataset.delev);
+    await persist(); renderEvalList();
+  });
+}
+function openEvalModal(){
+  const fields=[
+    {name:'employeeId',label:'Colaborador evaluado',type:'select',options:employeeOptions(teamIds())},
+    {name:'evaluator',label:'Evaluador'},
+    {name:'type',label:'Tipo',type:'select',options:[{value:'90',label:'90°'},{value:'180',label:'180°'},{value:'360',label:'360°'}]},
+    {name:'cycle',label:'Ciclo (ej. 2026-S2)'},
+    {name:'competencyName',label:'Competencia principal'},
+    {name:'competencyScore',label:'Puntaje (1-5)',type:'number'},
+    {name:'comment',label:'Retroalimentación / comentario',type:'textarea'},
+    {name:'status',label:'Estado',type:'select',options:[{value:'pending',label:'Pendiente'},{value:'completed',label:'Completado'}]},
+  ];
+  openModal('Nueva evaluación', fields, null, async(data)=>{
+    const ev={id:uid(), employeeId:data.employeeId, evaluator:data.evaluator, type:data.type, cycle:data.cycle,
+      scores:[{name:data.competencyName, score:data.competencyScore}], comment:data.comment, status:data.status};
+    state.evaluations.push(ev);
+    await persist(); closeModal(); renderEvalList();
+  });
+}
+
+/* ============================= REUNIONES INDIVIDUALES (1:1) ============================= */
+function renderOneOnOne(){
+  const v=document.getElementById('view');
+  v.innerHTML = `<div class="filter-bar"><button class="btn primary" id="addOneOnOneBtn">+ Nueva reunión individual</button></div><div id="oneList"></div>`;
+  document.getElementById('addOneOnOneBtn').onclick=()=>openOneOnOneModal();
+  renderOneList();
+}
+function renderOneList(){
+  const team = teamIds();
+  const list = state.oneOnOnes.filter(o=>team.includes(o.leaderId)||team.includes(o.collaboratorId));
+  const c=document.getElementById('oneList');
+  c.innerHTML = list.length? list.map(o=>`
+    <div class="panel">
+      <h3>${empName(o.leaderId)} ↔ ${empName(o.collaboratorId)}</h3>
+      <div class="subnote">${fmtDate(o.date)}</div>
+      <div style="margin-bottom:10px;">${o.notes}</div>
+      <table><thead><tr><th>Acuerdo</th><th>Fecha límite</th><th>Estado</th></tr></thead><tbody>
+        ${o.agreements.map(a=>`<tr><td>${a.description}</td><td>${fmtDate(a.dueDate)}</td><td><span class="pill ${a.status}">${statusLabel(a.status)}</span></td></tr>`).join('') || '<tr><td colspan="3" class="empty-row">Sin acuerdos.</td></tr>'}
+      </tbody></table>
+      <button class="btn ghost" data-addagreement="${o.id}" style="margin-top:8px;">+ Acuerdo</button>
+      <button class="btn ghost" data-delone="${o.id}" style="color:var(--critical)">Eliminar</button>
+    </div>`).join('') : `<div class="panel empty-row">Sin reuniones individuales registradas.</div>`;
+  c.querySelectorAll('[data-delone]').forEach(b=>b.onclick=async()=>{
+    state.oneOnOnes = state.oneOnOnes.filter(o=>o.id!==b.dataset.delone);
+    await persist(); renderOneList();
+  });
+  c.querySelectorAll('[data-addagreement]').forEach(b=>b.onclick=()=>{
+    openModal('Nuevo acuerdo', [{name:'description',label:'Descripción'},{name:'dueDate',label:'Fecha límite',type:'date'}], null, async(data)=>{
+      const o = state.oneOnOnes.find(x=>x.id===b.dataset.addagreement);
+      o.agreements.push({description:data.description, dueDate:data.dueDate, status:'open'});
+      await persist(); closeModal(); renderOneList();
+    });
+  });
+}
+function openOneOnOneModal(){
+  const fields=[
+    {name:'leaderId',label:'Líder',type:'select',options:employeeOptions()},
+    {name:'collaboratorId',label:'Colaborador',type:'select',options:employeeOptions(teamIds())},
+    {name:'date',label:'Fecha',type:'date'},
+    {name:'notes',label:'Notas de la reunión',type:'textarea'},
+  ];
+  openModal('Nueva reunión individual', fields, null, async(data)=>{
+    data.id=uid(); data.agreements=[];
+    state.oneOnOnes.push(data);
+    await persist(); closeModal(); renderOneList();
+  });
+}
+
+/* ============================= GESTIÓN DEL TIEMPO ============================= */
+function renderTime(){
+  const v=document.getElementById('view');
+  const scoped = currentRole()!=='colaborador';
+  v.innerHTML = `
+    <div class="filter-bar">
+      ${scoped? `<select id="taskEmpFilter"><option value="">Todo mi equipo</option>${employeeOptions(teamIds()).map(o=>`<option value="${o.value}">${o.label}</option>`).join('')}</select>` : ''}
+      <button class="btn primary" id="addTaskBtn">+ Nueva tarea</button>
+    </div>
+    <div class="quadrant-grid">
+      <div class="quadrant-box q1"><h4>I · Urgente e importante</h4><div id="q1"></div></div>
+      <div class="quadrant-box q2"><h4>II · Importante, no urgente</h4><div id="q2"></div></div>
+      <div class="quadrant-box q3"><h4>III · Urgente, no importante</h4><div id="q3"></div></div>
+      <div class="quadrant-box q4"><h4>IV · Ni urgente ni importante</h4><div id="q4"></div></div>
+    </div>
+  `;
+  document.getElementById('addTaskBtn').onclick=()=>openTaskModal();
+  if(scoped) document.getElementById('taskEmpFilter').onchange=renderQuadrants;
+  renderQuadrants();
+}
+function renderQuadrants(){
+  const scoped = currentRole()!=='colaborador';
+  const filterEl = document.getElementById('taskEmpFilter');
+  const filter = scoped && filterEl ? filterEl.value : session.employeeId;
+  const scope = scoped ? teamIds() : [session.employeeId];
+  [1,2,3,4].forEach(q=>{
+    const tasks = state.tasks.filter(t=>t.quadrant===q && scope.includes(t.employeeId) && (!scoped || !filter || t.employeeId===filter));
+    document.getElementById('q'+q).innerHTML = tasks.length? tasks.map(t=>`
+      <div class="task-chip ${t.status==='done'?'done':''}">
+        <span>${t.title} ${scoped?`<span style="color:var(--muted);font-size:11px;">(${empName(t.employeeId)}, ${fmtDate(t.dueDate)})</span>`:`<span style="color:var(--muted);font-size:11px;">(${fmtDate(t.dueDate)})</span>`}</span>
+        <span>
+          <button class="icon-btn edit" data-toggletask="${t.id}">${t.status==='done'?'↺':'✓'}</button>
+          <button class="icon-btn" data-deltask="${t.id}">✕</button>
+        </span>
+      </div>`).join('') : `<div class="empty-row" style="font-size:12px;">Sin tareas.</div>`;
+  });
+  document.querySelectorAll('[data-toggletask]').forEach(b=>b.onclick=async()=>{
+    const t=state.tasks.find(x=>x.id===b.dataset.toggletask);
+    t.status = t.status==='done'?'pending':'done';
+    await persist(); renderQuadrants();
+  });
+  document.querySelectorAll('[data-deltask]').forEach(b=>b.onclick=async()=>{
+    state.tasks = state.tasks.filter(x=>x.id!==b.dataset.deltask);
+    await persist(); renderQuadrants();
+  });
+}
+function openTaskModal(){
+  const scoped = currentRole()!=='colaborador';
+  const fields=[
+    {name:'title',label:'Tarea'},
+    {name:'employeeId',label:'Colaborador',type:'select',options: scoped? employeeOptions(teamIds()) : [{value:session.employeeId,label:empName(session.employeeId)}], default:session.employeeId},
+    {name:'quadrant',label:'Cuadrante',type:'select',options:[{value:1,label:'I — Urgente e importante'},{value:2,label:'II — Importante, no urgente'},{value:3,label:'III — Urgente, no importante'},{value:4,label:'IV — Ninguna'}]},
+    {name:'dueDate',label:'Fecha límite',type:'date'},
+    {name:'week',label:'Semana',default:selectedWeek},
+  ];
+  openModal('Nueva tarea', fields, null, async(data)=>{
+    data.id=uid(); data.status='pending'; data.quadrant=parseInt(data.quadrant);
+    state.tasks.push(data);
+    await persist(); closeModal(); renderQuadrants();
+  });
+}
+
+/* ============================= DESARROLLO DE TALENTO ============================= */
+function renderDevelopment(){
+  const v=document.getElementById('view');
+  v.innerHTML = `<div class="filter-bar"><button class="btn primary" id="addPidBtn">+ Nuevo PID</button></div><div id="pidList"></div>`;
+  document.getElementById('addPidBtn').onclick=()=>openPidModal();
+  renderPidList();
+}
+function renderPidList(){
+  const team = teamIds();
+  const list = state.developmentPlans.filter(p=>team.includes(p.employeeId));
+  const c=document.getElementById('pidList');
+  c.innerHTML = list.length? list.map(p=>`
+    <div class="panel">
+      <h3>${empName(p.employeeId)} — PID ${p.year}</h3>
+      <div class="subnote">Área de enfoque: ${p.focusArea}</div>
+      <table><thead><tr><th>Curso / certificación</th><th>Estado</th></tr></thead><tbody>
+        ${p.courses.map(c2=>`<tr><td>${c2.title}</td><td><span class="pill ${c2.status}">${statusLabel(c2.status)}</span></td></tr>`).join('') || '<tr><td colspan="2" class="empty-row">Sin cursos aún.</td></tr>'}
+      </tbody></table>
+      <button class="btn ghost" data-addcourse="${p.id}" style="margin-top:8px;">+ Curso</button>
+      <button class="btn ghost" data-delpid="${p.id}" style="color:var(--critical)">Eliminar</button>
+    </div>`).join('') : `<div class="panel empty-row">Sin planes de desarrollo registrados.</div>`;
+  c.querySelectorAll('[data-delpid]').forEach(b=>b.onclick=async()=>{
+    state.developmentPlans = state.developmentPlans.filter(p=>p.id!==b.dataset.delpid);
+    await persist(); renderPidList();
+  });
+  c.querySelectorAll('[data-addcourse]').forEach(b=>b.onclick=()=>{
+    openModal('Agregar curso', [{name:'title',label:'Nombre del curso/certificación'},{name:'status',label:'Estado',type:'select',options:[{value:'enrolled',label:'Inscrito'},{value:'in_progress',label:'En curso'},{value:'completed',label:'Completado'}]}], null, async(data)=>{
+      const p=state.developmentPlans.find(x=>x.id===b.dataset.addcourse);
+      p.courses.push(data);
+      await persist(); closeModal(); renderPidList();
+    });
+  });
+}
+function openPidModal(){
+  const scoped = currentRole()!=='colaborador';
+  const fields=[
+    {name:'employeeId',label:'Colaborador',type:'select',options: scoped? employeeOptions(teamIds()) : [{value:session.employeeId,label:empName(session.employeeId)}], default:session.employeeId},
+    {name:'year',label:'Año',type:'number', default:new Date().getFullYear()},
+    {name:'focusArea',label:'Área de enfoque'},
+  ];
+  openModal('Nuevo PID', fields, null, async(data)=>{
+    data.id=uid(); data.courses=[];
+    state.developmentPlans.push(data);
+    await persist(); closeModal(); renderPidList();
+  });
+}
+
+/* ============================= RECONOCIMIENTO ============================= */
+function renderRecognition(){
+  const v=document.getElementById('view');
+  const totalsByEmp={};
+  state.recognitions.forEach(r=>{ totalsByEmp[r.toId]=(totalsByEmp[r.toId]||0)+r.points; });
+  v.innerHTML = `
+    <div class="filter-bar"><button class="btn accent" id="addRecBtn">+ Dar reconocimiento</button></div>
+    <div class="content-grid">
+      <div class="panel">
+        <h3>Muro de logros</h3>
+        <div id="wallList"></div>
+      </div>
+      <div class="panel">
+        <h3>Puntos acumulados</h3>
+        <table><thead><tr><th>Colaborador</th><th>Puntos</th></tr></thead><tbody>
+          ${Object.entries(totalsByEmp).sort((a,b)=>b[1]-a[1]).map(([id,pts])=>`<tr><td>${empName(id)}</td><td>${pts}</td></tr>`).join('') || '<tr><td colspan="2" class="empty-row">Aún no hay puntos.</td></tr>'}
+        </tbody></table>
+      </div>
+    </div>
+  `;
+  document.getElementById('addRecBtn').onclick=()=>openRecognitionModal();
+  renderWall();
+}
+function renderWall(){
+  const c=document.getElementById('wallList');
+  c.innerHTML = state.recognitions.slice().reverse().map(r=>`
+    <div class="wall-item">
+      <span class="badge-tag">${r.badge}</span> ${empName(r.fromId)} → <strong>${empName(r.toId)}</strong>
+      <div>${r.message}</div>
+      <div class="meta">${fmtDate(r.date)} · +${r.points} pts <button class="icon-btn" data-delrec="${r.id}" style="float:right;">✕</button></div>
+    </div>`).join('') || `<div class="empty-row">Sin reconocimientos aún.</div>`;
+  c.querySelectorAll('[data-delrec]').forEach(b=>b.onclick=async()=>{
+    state.recognitions = state.recognitions.filter(r=>r.id!==b.dataset.delrec);
+    await persist(); renderRecognition();
+  });
+}
+function openRecognitionModal(){
+  const fields=[
+    {name:'fromId',label:'De', type:'select', options:[{value:session.employeeId,label:empName(session.employeeId)}], default:session.employeeId},
+    {name:'toId',label:'Para',type:'select',options:employeeOptions().filter(o=>o.value!==session.employeeId)},
+    {name:'badge',label:'Insignia',type:'select',options:state.badges},
+    {name:'message',label:'Mensaje',type:'textarea'},
+    {name:'points',label:'Puntos',type:'number', default:25},
+    {name:'date',label:'Fecha',type:'date', default:new Date().toISOString().slice(0,10)},
+  ];
+  openModal('Dar reconocimiento', fields, null, async(data)=>{
+    data.id=uid();
+    state.recognitions.push(data);
+    await persist(); closeModal(); renderRecognition();
+  });
+}
+
+/* ============================= INIT ============================= */
+async function boot(){
+  if(!session){
+    renderLogin();
+    return;
+  }
+  const emp = getEmp(session.employeeId);
+  if(!emp){ session=null; renderLogin(); return; }
+  activeMode = getRole(emp.roleId).accessLevel==='admin' ? 'admin' : 'normal';
+  document.getElementById('loginGate').style.display='none';
+  document.getElementById('appShell').style.display='grid';
+  document.getElementById('switchUserBtn').onclick = async()=>{
+    session=null;
+    loginMode='normal';
+    try{ await window.storage.delete(SESSION_KEY, false); }catch(e){}
+    boot();
+  };
+  currentView=null;
+  renderAll();
+}
+
+async function init(){
+  document.body.style.cursor='wait';
+  await loadState();
+  await loadSession();
+  document.body.style.cursor='default';
+  boot();
+}
+init();
+</script>
+</body>
+</html>
