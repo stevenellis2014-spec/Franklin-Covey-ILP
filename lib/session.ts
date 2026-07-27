@@ -43,7 +43,7 @@ export async function getSessionContext() {
     .eq("manager_id", emp.id);
 
   const isManager = (reportsCount ?? 0) > 0;
-  const canToggleMode = baseLevel === "admin" && isManager;
+  const canToggleMode = baseLevel === "admin";
 
   const cookieStore = await cookies();
   const modeCookie = cookieStore.get("ilp_mode")?.value;
